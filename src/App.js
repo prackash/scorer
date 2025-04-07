@@ -18,7 +18,10 @@ export default function CricketScorer(){
       ballType:"",
   });
   const [balls,setBalls]=useState([]);
+  const [totalRuns, setTotalRuns] = useState(0);
+  const [ballCount, setBallCount] = useState(0);
   const [currentOver, setCurrentOver] = useState(0);
+  const [skipNextBallCount, setSkipNextBallCount] = useState(false);
   const [currentBatsman, setCurrentBatsman] = useState("");
   const [currentBowler, setCurrentBowler] = useState("");
   const [currentLineAndLength, setCurrentLineAndLength] = useState("");
@@ -31,7 +34,32 @@ export default function CricketScorer(){
   
 
   const nextBall=()=>{
-    setBalls([...balls,{...currentBall,ballNumber:balls.length+1}]);
+    let extraRuns=0;
+    if(currentBall.extraType==="Wide" || currentBall.extraType==="No Ball"){
+      extraRuns=1;
+    }
+    else if (currentBall.extraType ==="No Ball + Free Hit"){
+      extraRuns=1;
+      setSkipNextBallCount(true);
+    }
+
+    const thisBallNumber = skipNextBallCount?ballCount:ballCount+1;
+    if(!skipNextBallCount) setBallCount(thisBallNumber);
+    if(skipNextBallCount) setSkipNextBallCount(false);
+    const totalForBall = currentBall.runs + extraRuns;
+    setTotalRuns(totalRuns + totalForBall);
+    setCurrentOver(Math.floor(thisBallNumber/6));
+
+    setBalls(prevBalls => [
+      {
+        ...currentBall,
+        ballNumber: thisBallNumber,
+        runsThisBall: totalForBall,
+        cumulativeRuns: totalRuns + totalForBall,
+      },
+      ...prevBalls,
+    ]);
+
     setCurrentBall({
       runs:0,
       extra:false,
@@ -47,9 +75,9 @@ export default function CricketScorer(){
       ballType:"",
     });
   };
-  return (
+   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 p-6">
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow p-6 space-y-4">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow p-6 space-y-4">
         <h1 className="text-2xl font-bold text-center">Cricket Scorer</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -75,6 +103,7 @@ export default function CricketScorer(){
               <option value="No Ball">No Ball</option>
               <option value="Bye">Bye</option>
               <option value="Leg Bye">Leg Bye</option>
+              <option value="No Ball + Free Hit">No Ball + Free Hit</option>
             </select>
           </div>
 
@@ -171,10 +200,12 @@ export default function CricketScorer(){
                 <th className="border p-2">Ball Landed</th>
                 <th className="border p-2">Extras</th>
                 <th className="border p-2">Dismissal</th>
+                <th className="border p-2">Runs</th>
+                <th className="border p-2">Total Runs</th>
               </tr>
             </thead>
             <tbody>
-              {[...balls].reverse().map((ball, index) => (
+            {balls.map((ball, index) => (
                 <tr key={index}>
                   <td className="border p-2">{balls.length - index}</td>
                   <td className="border p-2">{ball.ballNumber}</td>
@@ -185,6 +216,8 @@ export default function CricketScorer(){
                   <td className="border p-2">{ball.wagonWheel}</td>
                   <td className="border p-2">{ball.extraType}</td>
                   <td className="border p-2">{ball.dismissalType}</td>
+                  <td className="border p-2">{ball.runsThisBall}</td>
+                  <td className="border p-2">{ball.cumulativeRuns}</td>
                 </tr>
               ))}
             </tbody>
