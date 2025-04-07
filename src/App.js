@@ -174,9 +174,9 @@ export default function CricketScorer(){
               </tr>
             </thead>
             <tbody>
-              {balls.map((ball, index) => (
+              {[...balls].reverse().map((ball, index) => (
                 <tr key={index}>
-                  <td className="border p-2">{index + 1}</td>
+                  <td className="border p-2">{balls.length - index}</td>
                   <td className="border p-2">{ball.ballNumber}</td>
                   <td className="border p-2">{ball.shotType}</td>
                   <td className="border p-2">{ball.batsman}</td>
