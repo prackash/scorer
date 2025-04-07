@@ -3,19 +3,15 @@
 import React, {useState} from "react"
 
 export default function CricketScorer(){
-  const[currentBall, setCurrentBall] = useState({
-    runs:0,
-      extra:false,
-      extraType:"",
-      wagonWheel:"",
-      dismissal:false,
-      dismissalType:"",
-      shotType:"",
-      batsman:"",
-      bowler:"",
-      over:"",
-      lineandlength:"",
-      ballType:"",
+  const [currentBall, setCurrentBall] = useState({
+    runs: 0,
+    extraType: "",
+    wagonWheel: "",
+    dismissalType: "",
+    shotType: "",
+    batsman: "",
+    bowler: "",
+    lineLength: "",
   });
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
@@ -60,20 +56,15 @@ export default function CricketScorer(){
       ...prevBalls,
     ]);
 
-    setCurrentBall({
-      runs:0,
-      extra:false,
-      extraType:"",
-      wagonWheel:"",
-      dismissal:false,
-      dismissalType:"",
-      shotType:"",
-      batsman:"",
-      bowler:"",
-      over:"",
-      lineandlength:"",
-      ballType:"",
-    });
+    setCurrentBall(prev => ({
+      ...prev,
+      runs: 0,
+      extraType: "",
+      wagonWheel: "",
+      dismissalType: "",
+      shotType: "",
+      lineLength: "",
+    }));
   };
    return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 p-6">
