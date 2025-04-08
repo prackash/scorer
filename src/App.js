@@ -25,7 +25,7 @@ export default function CricketScorer(){
   const [striker, setStriker] = useState("");
   const [nonStriker, setNonStriker] = useState("");
   const [battingOrder, setBattingOrder] = useState([]);
-
+  const [bowlingStats, setBowlingStats] = useState({});
   const wagonWheelZones = ["1stSlip","2ndSlip","3rdSlip","4thSlip","5thSlip",
     "BackwardPoint","BackwardShortLeg","BackwardSquareLeg",
     "Bowler","CowCorner","DeepBackwardPoint","DeepBackwardSquareLeg","DeepCover",
@@ -156,6 +156,27 @@ export default function CricketScorer(){
     const totalForBall = currentBall.runs + extraRuns;
     const updatedTotalRuns = totalRuns + totalForBall;
     setTotalRuns(updatedTotalRuns);
+
+    setBowlingStats(prevStats => {
+      const bowler = currentBall.bowler;
+      if(!bowler) return prevStats;
+      const isWideOrNoBall = currentBall.extraType.includes("Wide") || currentBall.extraType.includes("No Ball");
+      const isValidBall = !isWideOrNoBall;
+      const extras = currentBall.extraType ? 1 : 0;
+      const runs = currentBall.runs + extras;
+      const isWicket = currentBall.dismissalType !== "";
+
+      const exisiting = prevStats[bowler]|| {balls:0,runs:0,wickets:0,extras:0};
+      return {
+        ...prevStats,
+        [bowler]: {
+          balls: exisiting.balls + (isValidBall ? 1 : 0),
+          runs: exisiting.runs + runs,
+          wickets: exisiting.wickets + (isWicket ? 1 : 0),
+          extras: exisiting.extras + extras,
+        },
+      };
+    });
 
     setBattingOrder(prevOrder => {
     const exists = prevOrder.find(player => player.name === striker);
@@ -474,6 +495,32 @@ export default function CricketScorer(){
       </div>
       </div>
       <div className="Bowling">
+        <h2>Bowling Stats</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Bowler</th>
+              <th>Overs</th>
+              <th>Runs</th>
+              <th>Wickets</th>
+              <th>Extras</th>
+              <th>Economy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(bowlingStats).map(([bowler, stats]) => ( 
+             <tr key={bowler}>
+              <td>{bowler}</td>
+              <td>{Math.floor(stats.balls/6)}.{stats.balls%6}</td>
+              <td>{stats.runs}</td>
+              <td>{stats.wickets}</td>
+              <td>{stats.extras}</td>
+              <td>{(stats.runs / (stats.balls / 6)).toFixed(2)}</td>
+            </tr>
+            ))
+            }
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@
   padding: 1.5rem;
 }
 .scorer-container {
-    min-height: 100vh;
+    /* min-height: 100vh; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -159,5 +159,29 @@
   
   .table th {
     background-color: #f3f4f6;
+  }
+  .Bowling {
+    width: 350px;
+    background-color: #fef3c7; /* light yellow */
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+  }
+  .Bowling table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .Bowling th,
+  .Bowling td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  .Bowling th {
+    background-color: #fde68a;
+    font-weight: 600;
   }
   
