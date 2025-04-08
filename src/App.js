@@ -33,9 +33,14 @@ export default function CricketScorer(){
     "LegGully","LegSlip","LongOn","LongStop","MidOff","MidOn","MidWicket",
     "ShortCover","ShortFineLeg","ShortLeg","ShortMidOff","ShortMidOn",
     "ShortMidWicket","ShortThirdMan","SillyMidOff","SillyMidOn","SillyPoint",
-    "SquareFineLeg","SquareThirdMan","StraightFineLeg","StraightHit","StraightHit",
+    "SquareFineLeg","SquareThirdMan","StraightFineLeg","StraightHit",
     "StraightLongOff","StraightLongOn","WideLongOff","WideLongOn","WK"
   ]
+
+  const shots = ["Backfoot Defence","Cover Drive","Flick","Frontfoot Defence","Hook",
+    "Innovative Shot","Late Cut","Left","Leg Glance ","No Shot","Off Drive","Ondrive",
+    "Pull","Reverse Sweep","Scoop","Slog","Slog Sweep","Square Cut","Straight Drive",
+    "Sweep"]
 
   const handleChange=(field,value)=>{
     setCurrentBall({...currentBall,[field]:value});
@@ -245,12 +250,18 @@ export default function CricketScorer(){
 
           <div>
             <label className="block text-sm font-medium">Shot Type</label>
-            <input
-              type="text"
+            <select
               value={currentBall.shotType}
               onChange={(e) => handleChange("shotType", e.target.value)}
               className="w-full border rounded p-2 mt-1"
-            />
+              >
+              <option value="">Select Shot</option>
+              {shots.map((shot) => (
+                <option key={shot} value={shot}>
+                  {shot}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
