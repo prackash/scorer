@@ -2,22 +2,28 @@
 .layout{
   display:flex;
   flex-direction: row;
-  justify-content: left;
+  justify-content: center;
   align-items: flex-start;
   gap: 1rem;
   padding: 1.5rem;
 }
+.side-section{
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 400px;
+}
 .scorer-container {
-    /* min-height: 100vh; */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: #f0fdf4;
-    padding: 1.5rem;
+    padding: 3rem;
   }
   .batting-order{
-    width: 300px;
+    width: 350px;
     background-color: #f3f4f6;
     border-radius: 1rem;
     padding: 1.5rem;
@@ -39,12 +45,13 @@
     font-weight: 600;
   }
   .scorer-card {
+    
     width: 100%;
     max-width: 64rem;
     background-color: white;
     border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
+    padding: 2rem;
     gap: 1rem;
   }
   

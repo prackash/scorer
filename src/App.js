@@ -239,6 +239,7 @@ export default function CricketScorer(){
   
    return (
     <div className="layout">
+      <div className="side-section">
       <div className="batting-order">
         <div className="batting-table">
           <h2 className="heading">Batting Order</h2>
@@ -281,6 +282,35 @@ export default function CricketScorer(){
             </tbody>
           </table>
         </div>
+      </div>
+      <div className="Bowling">
+        <h2 className="heading">Bowling Stats</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Bowler</th>
+              <th>Overs</th>
+              <th>Runs</th>
+              <th>Wickets</th>
+              <th>Extras</th>
+              <th>Economy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(bowlingStats).map(([bowler, stats]) => ( 
+             <tr key={bowler}>
+              <td>{bowler}</td>
+              <td>{Math.floor(stats.balls/6)}.{stats.balls%6}</td>
+              <td>{stats.runs}</td>
+              <td>{stats.wickets}</td>
+              <td>{stats.extras}</td>
+              <td>{(stats.runs / (stats.balls / 6)).toFixed(2)}</td>
+            </tr>
+            ))
+            }
+          </tbody>
+        </table>
+      </div>
       </div>
       <div className="scorer-container">
       <div className="scorer-card">
@@ -493,34 +523,6 @@ export default function CricketScorer(){
           </table>
         )}
       </div>
-      </div>
-      <div className="Bowling">
-        <h2 className="heading">Bowling Stats</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Bowler</th>
-              <th>Overs</th>
-              <th>Runs</th>
-              <th>Wickets</th>
-              <th>Extras</th>
-              <th>Economy</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(bowlingStats).map(([bowler, stats]) => ( 
-             <tr key={bowler}>
-              <td>{bowler}</td>
-              <td>{Math.floor(stats.balls/6)}.{stats.balls%6}</td>
-              <td>{stats.runs}</td>
-              <td>{stats.wickets}</td>
-              <td>{stats.extras}</td>
-              <td>{(stats.runs / (stats.balls / 6)).toFixed(2)}</td>
-            </tr>
-            ))
-            }
-          </tbody>
-        </table>
       </div>
     </div>
   );
