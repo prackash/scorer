@@ -45,8 +45,11 @@ export default function CricketScorer(){
     "Sweep"]
 
   const handleChange=(field,value)=>{
-    setCurrentBall({...currentBall,[field]:value});
-    if (field === "batsman") setStriker(value);
+    setCurrentBall(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  if (field === "batsman") setStriker(value);
     if (field === "nonStriker") setNonStriker(value);
   };
 
@@ -66,8 +69,9 @@ export default function CricketScorer(){
   const endOfOver = () => {
     console.log("End of Over");
     setBallCount(0);
-    setCurrentBall(prev => ({ ...prev, bowler: "" }));
+    // setCurrentBall(prev => ({ ...prev, bowler: "" }));
     setOver(prev => prev + 1);
+    handleChange("bowler", "");
   };
   const downloadCSV = () => {
     const headers = [
@@ -240,8 +244,8 @@ export default function CricketScorer(){
             </thead>
             <tbody>
               {battingOrder.map((player, index) => {
-                // const strikeRate = 
-                //   player.balls > 0? ((player.runs/player.balls)*100).toFixed(2) : 0;
+                const strikeRate = 
+                  player.balls > 0? ((player.runs/player.balls)*100).toFixed(2) : 0;
                   return(
                     <tr key={index}>
                       <td className="battbody">{player.name}</td>
@@ -249,7 +253,7 @@ export default function CricketScorer(){
                       <td className="battbody">{player.fours}</td>
                       <td className="battbody">{player.sixes}</td>
                       <td className="battbody">{player.balls}</td>
-                      {/* <td className="battbody">{strikeRate}</td> */}
+                      <td className="battbody">{strikeRate}</td>
                     </tr>
                   );
               })}
