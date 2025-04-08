@@ -495,7 +495,7 @@ export default function CricketScorer(){
       </div>
       </div>
       <div className="Bowling">
-        <h2>Bowling Stats</h2>
+        <h2 className="heading">Bowling Stats</h2>
         <table>
           <thead>
             <tr>
