@@ -341,11 +341,11 @@ export default function CricketScorer(){
         >
           Next Ball
         </button>
-        <button className="submit-button bg-red-600 hover:bg-red-700" onClick={deletePrev}>
+        <button className="delete-button" onClick={deletePrev}>
           Delete Prev
         </button> 
 
-        <button onClick={downloadCSV} className="submit-button">
+        <button onClick={downloadCSV} className="download-button">
           Download CSV
         </button>
 
