@@ -24,8 +24,10 @@ export default function CricketScorer(){
   const [skipNextBallCount, setSkipNextBallCount] = useState(false);
   const [striker, setStriker] = useState("");
   const [nonStriker, setNonStriker] = useState("");
+  const [battingOrder, setBattingOrder] = useState([]);
+
   const wagonWheelZones = ["1stSlip","2ndSlip","3rdSlip","4thSlip","5thSlip",
-    "BackwardPoint","BackwardShortLeg","BackwardShortLeg","BackwardSquareLeg",
+    "BackwardPoint","BackwardShortLeg","BackwardSquareLeg",
     "Bowler","CowCorner","DeepBackwardPoint","DeepBackwardSquareLeg","DeepCover",
     "DeepCoverPoint","DeepExtraCover","DeepFineLeg","DeepForwardMidwicket",
     "DeepForwardSquareLeg","DeepMidOff","DeepMidOn","DeepPoint","ExtraCover",
@@ -47,6 +49,9 @@ export default function CricketScorer(){
     if (field === "batsman") setStriker(value);
     if (field === "nonStriker") setNonStriker(value);
   };
+
+
+    
   const switchStrikers=()=>{
     if(currentBall.switchStrikers===1){
       console.log("Switching Strikers");
@@ -148,6 +153,35 @@ export default function CricketScorer(){
     const updatedTotalRuns = totalRuns + totalForBall;
     setTotalRuns(updatedTotalRuns);
 
+    setBattingOrder(prevOrder => {
+    const exists = prevOrder.find(player => player.name === striker);
+    if(!exists){
+      return [...prevOrder, { name: striker, runs: 0, fours: 0, sixes: 0, balls: 0 }];
+    }
+    return prevOrder
+  });
+  const isLegit = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball") && !currentBall.extraType.includes("No Ball + Free Hit") && !currentBall.extraType.includes("Bye") && !currentBall.extraType.includes("Leg Bye");
+  if(isLegit){
+    setBattingOrder(prevOrder => {
+      const runs = currentBall.runs;
+      const name = striker;
+      return prevOrder.map(player=> {
+        if(player.name!==name) 
+          {return player};
+        
+          const isFour = runs === 4;
+          const isSix = runs === 6;
+          return{
+            ...player,
+            runs: player.runs + runs,
+            balls: player.balls + 1,
+            fours: player.fours + (isFour ? 1 : 0),
+            sixes: player.sixes + (isSix ? 1 : 0),
+          };
+      });
+    });
+  }
+
     setBalls(prevBalls => [
       {
         ...currentBall,
@@ -180,6 +214,50 @@ export default function CricketScorer(){
   
    return (
     <div className="scorer-container">
+      <div className="Overall">
+        <div className="batting-table">
+          <h2 className="heading">Batting Order</h2>
+          {/* <div className="input-group">
+            <input
+              type="text"
+              value={newBatsman}
+              onChange={(e) => setNewBatsman(e.target.value)}
+              placeholder="Add Batsman"
+              className="input-field"
+            />
+            <button onClick={addBatsman} className="add-button">Add</button>
+          </div> */}
+          <table className="battable">
+            <thead className="batthead">
+              <tr>
+                <th className="batthead">Batsman</th>
+                <th className="batthead">Runs</th>
+                <th className="batthead">Fours</th>
+                <th className="batthead">Sixes</th>
+                <th className="batthead">Balls</th>
+                <th className="batthead">Strike Rate</th>
+              </tr>  
+            </thead>
+            <tbody>
+              {battingOrder.map((player, index) => {
+                // const strikeRate = 
+                //   player.balls > 0? ((player.runs/player.balls)*100).toFixed(2) : 0;
+                  return(
+                    <tr key={index}>
+                      <td className="battbody">{player.name}</td>
+                      <td className="battbody">{player.runs}</td>
+                      <td className="battbody">{player.fours}</td>
+                      <td className="battbody">{player.sixes}</td>
+                      <td className="battbody">{player.balls}</td>
+                      {/* <td className="battbody">{strikeRate}</td> */}
+                    </tr>
+                  );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div className="scorer-card">
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
@@ -389,6 +467,8 @@ export default function CricketScorer(){
             </tbody>
           </table>
         )}
+      </div>
+      <div className="Bowling">
       </div>
     </div>
   );
