@@ -13,6 +13,7 @@ export default function CricketScorer(){
     bowler: "",
     line: "",
     Length: "",
+    switchStrikers: 0,
   });
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
@@ -27,10 +28,19 @@ export default function CricketScorer(){
     if (field === "batsman") setStriker(value);
     if (field === "nonStriker") setNonStriker(value);
   };
+  const switchStrikers=()=>{
+    if(currentBall.switchStrikers===1){
+      console.log("Switching Strikers");
+      setStriker(prev => {
+        setNonStriker(prev);
+        return nonStriker;
+      });
+      handleChange("batsman", nonStriker);
+    }
+    
+  };
   const endOfOver = () => {
-    const temp = striker;
-    setStriker(nonStriker);
-    setNonStriker(temp);
+    console.log("End of Over");
     setBallCount(0);
     setCurrentBall(prev => ({ ...prev, bowler: "" }));
     setOver(prev => prev + 1);
@@ -45,6 +55,9 @@ export default function CricketScorer(){
     else if (currentBall.extraType ==="No Ball + Free Hit"){
       extraRuns=1;
       setSkipNextBallCount(true);
+    }
+    if(currentBall.runs%2===1){
+      currentBall.switchStrikers+=1;
     }
 
     const isValidBall = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball");
@@ -67,8 +80,10 @@ export default function CricketScorer(){
     ]);
 
     if (isValidBall && ((thisBallNumber) % 6 === 0)) {
+      currentBall.switchStrikers += 1;
       endOfOver();
     }
+    switchStrikers();
 
     setCurrentBall(prev => ({
       ...prev,
@@ -79,6 +94,7 @@ export default function CricketScorer(){
       shotType: "",
       line: "",
       Length: "",
+      switchStrikers: 0,
     }));
     
   };
