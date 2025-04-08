@@ -1,6 +1,8 @@
 // import logo from './logo.svg';
 // import './App.css';
 import React, {useState} from "react"
+import wagonwheel from "./assets/wagonwheel.jpg"
+import "./styles/CricketScorer.css"
 
 export default function CricketScorer(){
   const [currentBall, setCurrentBall] = useState({
@@ -22,6 +24,18 @@ export default function CricketScorer(){
   const [skipNextBallCount, setSkipNextBallCount] = useState(false);
   const [striker, setStriker] = useState("");
   const [nonStriker, setNonStriker] = useState("");
+  const wagonWheelZones = ["1stSlip","2ndSlip","3rdSlip","4thSlip","5thSlip",
+    "BackwardPoint","BackwardShortLeg","BackwardShortLeg","BackwardSquareLeg",
+    "Bowler","CowCorner","DeepBackwardPoint","DeepBackwardSquareLeg","DeepCover",
+    "DeepCoverPoint","DeepExtraCover","DeepFineLeg","DeepForwardMidwicket",
+    "DeepForwardSquareLeg","DeepMidOff","DeepMidOn","DeepPoint","ExtraCover",
+    "FineLeg","FineThirdMan","FlySlip","ForwardPoint","ForwardSquareLeg","Gully",
+    "LegGully","LegSlip","LongOn","LongStop","MidOff","MidOn","MidWicket",
+    "ShortCover","ShortFineLeg","ShortLeg","ShortMidOff","ShortMidOn",
+    "ShortMidWicket","ShortThirdMan","SillyMidOff","SillyMidOn","SillyPoint",
+    "SquareFineLeg","SquareThirdMan","StraightFineLeg","StraightHit","StraightHit",
+    "StraightLongOff","StraightLongOn","WideLongOff","WideLongOn","WK"
+  ]
 
   const handleChange=(field,value)=>{
     setCurrentBall({...currentBall,[field]:value});
@@ -99,11 +113,11 @@ export default function CricketScorer(){
     
   };
    return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 p-6">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-center">Cricket Scorer</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="scorer-container">
+      <div className="scorer-card">
+        <h1 className="heading">Cricket Scorer</h1>
+        <div className="form-grid">
+        <div className="input-grid">
           <div>
             <label className="block text-sm font-medium">Runs</label>
             <input
@@ -131,19 +145,18 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Ball Landing (Wagon Wheel Zone)</label>
+            <label className="block text-sm font-medium">Wagon Wheel Zone</label>
             <select
               value={currentBall.wagonWheel}
               onChange={(e) => handleChange("wagonWheel", e.target.value)}
               className="w-full border rounded p-2 mt-1"
             >
               <option value="">Select Zone</option>
-              <option value="Cover">Cover</option>
-              <option value="Midwicket">Midwicket</option>
-              <option value="Straight">Straight</option>
-              <option value="Fine Leg">Fine Leg</option>
-              <option value="Third Man">Third Man</option>
-              <option value="Point">Point</option>
+              {wagonWheelZones.map((zone) => (
+                <option key={zone} value={zone}>
+                  {zone}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -189,6 +202,15 @@ export default function CricketScorer(){
             />
           </div>
           <div>
+            <label className="block text-sm font-medium">Bowler</label>
+            <input
+              type="text"
+              value={currentBall.bowler}
+              onChange={(e) => handleChange("bowler", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium">Batsman-NonStike</label>
             <input
               type="text"
@@ -198,15 +220,7 @@ export default function CricketScorer(){
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium">Bowler</label>
-            <input
-              type="text"
-              value={currentBall.bowler}
-              onChange={(e) => handleChange("bowler", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
+          
 
           <div>
             <label className="block text-sm font-medium">Line</label>
@@ -239,17 +253,25 @@ export default function CricketScorer(){
             </select>
           </div>
         </div>
+        <div className="image-wrapper">
+          <img
+            src={wagonwheel}
+            alt="Wagon Wheel"
+            className="max-w-full h-auto rounded-lg shadow"
+          ></img>
+        </div>
+        </div>
         
 
         <button
           onClick={nextBall}
-          className="w-full bg-blue-600 text-white rounded py-2 mt-4 hover:bg-blue-700"
+          className="submit-button"
         >
           Next Ball
         </button>
 
         {balls.length > 0 && (
-          <table className="w-full mt-6 border text-sm">
+          <table className="table">
             <thead>
               <tr className="bg-gray-100">
                 <th className="border p-2">#</th>
