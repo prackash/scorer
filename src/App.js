@@ -59,7 +59,68 @@ export default function CricketScorer(){
     setCurrentBall(prev => ({ ...prev, bowler: "" }));
     setOver(prev => prev + 1);
   };
+  const downloadCSV = () => {
+    const headers = [
+      "Over",
+      "Ball",
+      "Shot Type",
+      "Batsman",
+      "Bowler",
+      "Line",
+      "Length",
+      "Ball Landed",
+      "Extras",
+      "Dismissal",
+      "Runs",
+      "Total Runs"
+    ];
   
+    const rows = balls.map((ball,index) => [
+      `"${ball.cOver}"`,
+      `"${ball.ballNumber}"`,
+      `"${ball.shotType}"`,
+      `"${ball.batsman}"`,
+      `"${ball.bowler}"`,
+      `"${ball.line}"`,
+      `"${ball.Length}"`,
+      `"${ball.wagonWheel}"`,
+      `"${ball.extraType}"`,
+      `"${ball.dismissalType}"`,
+      `"${ball.runsThisBall}"`,
+      `"${ball.cumulativeRuns}"`
+    ]);
+    
+    
+  
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+  
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "cricket_score.csv");
+    link.click();
+  };
+  
+  const deletePrev = () => {
+    if (balls.length === 0) return;
+  
+    const [latestBall, ...remainingBalls] = balls;
+  
+    // Adjust ball/over count
+    const isValidBall = !latestBall.extraType.includes("Wide") && !latestBall.extraType.includes("No Ball");
+    if (isValidBall) {
+      setBallCount(prev => (prev > 0 ? prev - 1 : 0));
+    }
+  
+    // Recalculate total runs
+    setBalls(remainingBalls);
+  setTotalRuns(prev => prev - latestBall.runsThisBall);
+  };
 
   const nextBall=()=>{
     let extraRuns=0;
@@ -110,8 +171,8 @@ export default function CricketScorer(){
       Length: "",
       switchStrikers: 0,
     }));
-    
   };
+  
    return (
     <div className="scorer-container">
       <div className="scorer-card">
@@ -268,6 +329,13 @@ export default function CricketScorer(){
           className="submit-button"
         >
           Next Ball
+        </button>
+        <button className="submit-button bg-red-600 hover:bg-red-700" onClick={deletePrev}>
+          Delete Prev
+        </button> 
+
+        <button onClick={downloadCSV} className="submit-button">
+          Download CSV
         </button>
 
         {balls.length > 0 && (
