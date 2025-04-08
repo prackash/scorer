@@ -1,5 +1,12 @@
 /* src/styles/CricketScorer.css */
-
+.layout{
+  display:flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+}
 .scorer-container {
     min-height: 100vh;
     display: flex;
@@ -9,7 +16,28 @@
     background-color: #f0fdf4;
     padding: 1.5rem;
   }
-  
+  .batting-order{
+    width: 300px;
+    background-color: #f3f4f6;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+    gap: 1rem;
+  }
+  .battable{
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .battable th, .battable td {
+    padding:8px;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+  .battable th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+  }
   .scorer-card {
     width: 100%;
     max-width: 64rem;

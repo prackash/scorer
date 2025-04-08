@@ -217,8 +217,8 @@ export default function CricketScorer(){
   };
   
    return (
-    <div className="scorer-container">
-      <div className="Overall">
+    <div className="layout">
+      <div className="batting-order">
         <div className="batting-table">
           <h2 className="heading">Batting Order</h2>
           {/* <div className="input-group">
@@ -261,7 +261,7 @@ export default function CricketScorer(){
           </table>
         </div>
       </div>
-
+      <div className="scorer-container">
       <div className="scorer-card">
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
@@ -471,6 +471,7 @@ export default function CricketScorer(){
             </tbody>
           </table>
         )}
+      </div>
       </div>
       <div className="Bowling">
       </div>
