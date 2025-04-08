@@ -16,18 +16,24 @@ export default function CricketScorer(){
   });
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
+  const [over,setOver]=useState(0);
   const [ballCount, setBallCount] = useState(0);
-  const [currentOver, setCurrentOver] = useState(0);
   const [skipNextBallCount, setSkipNextBallCount] = useState(false);
-  const [currentBatsman, setCurrentBatsman] = useState("");
-  const [currentBowler, setCurrentBowler] = useState("");
-  const [currentLine, setCurrentLine] = useState("");
-  const [currentLength, setCurrentLength] = useState("");
-  const [currentBallType, setCurrentBallType] = useState("");
-  const [currentShotType, setCurrentShotType] = useState("");
+  const [striker, setStriker] = useState("");
+  const [nonStriker, setNonStriker] = useState("");
 
   const handleChange=(field,value)=>{
     setCurrentBall({...currentBall,[field]:value});
+    if (field === "batsman") setStriker(value);
+    if (field === "nonStriker") setNonStriker(value);
+  };
+  const endOfOver = () => {
+    const temp = striker;
+    setStriker(nonStriker);
+    setNonStriker(temp);
+    setBallCount(0);
+    setCurrentBall(prev => ({ ...prev, bowler: "" }));
+    setOver(prev => prev + 1);
   };
   
 
@@ -41,22 +47,28 @@ export default function CricketScorer(){
       setSkipNextBallCount(true);
     }
 
-    const thisBallNumber = skipNextBallCount?ballCount:ballCount+1;
-    if(!skipNextBallCount) setBallCount(thisBallNumber);
+    const isValidBall = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball");
+    const thisBallNumber = skipNextBallCount ? ballCount : ballCount + (isValidBall ? 1 : 0);
+    if(!skipNextBallCount && isValidBall) setBallCount(thisBallNumber);
     if(skipNextBallCount) setSkipNextBallCount(false);
     const totalForBall = currentBall.runs + extraRuns;
-    setTotalRuns(totalRuns + totalForBall);
-    setCurrentOver(Math.floor(thisBallNumber/6));
+    const updatedTotalRuns = totalRuns + totalForBall;
+    setTotalRuns(updatedTotalRuns);
 
     setBalls(prevBalls => [
       {
         ...currentBall,
         ballNumber: thisBallNumber,
         runsThisBall: totalForBall,
-        cumulativeRuns: totalRuns + totalForBall,
+        cumulativeRuns: updatedTotalRuns,
+        cOver: over,
       },
       ...prevBalls,
     ]);
+
+    if (isValidBall && ((thisBallNumber) % 6 === 0)) {
+      endOfOver();
+    }
 
     setCurrentBall(prev => ({
       ...prev,
@@ -68,6 +80,7 @@ export default function CricketScorer(){
       line: "",
       Length: "",
     }));
+    
   };
    return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 p-6">
@@ -130,6 +143,13 @@ export default function CricketScorer(){
               <option value="Caught">Caught</option>
               <option value="LBW">LBW</option>
               <option value="Run Out">Run Out</option>
+              <option value="Stumped">Stumped</option>
+              <option value="Hit Wicket">Hit Wicket</option>
+              <option value="Obstructing the Field">Obstructing the Field</option>
+              <option value="Handled the Ball">Handled the Ball</option>
+              <option value="Timed Out">Timed Out</option>
+              <option value="Retired Hurt">Retired Hurt</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
@@ -144,11 +164,20 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Batsman</label>
+            <label className="block text-sm font-medium">Batsman-OnStike</label>
             <input
               type="text"
-              value={currentBall.batsman}
+              value={striker}
               onChange={(e) => handleChange("batsman", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Batsman-NonStike</label>
+            <input
+              type="text"
+              value={nonStriker}
+              onChange={(e) => setNonStriker(e.target.value)}
               className="w-full border rounded p-2 mt-1"
             />
           </div>
@@ -208,6 +237,7 @@ export default function CricketScorer(){
             <thead>
               <tr className="bg-gray-100">
                 <th className="border p-2">#</th>
+                <th className="border p-2">Over</th>
                 <th className="border p-2">Ball</th>
                 <th className="border p-2">Shot Type</th>
                 <th className="border p-2">Batsman</th>
@@ -225,6 +255,7 @@ export default function CricketScorer(){
             {balls.map((ball, index) => (
                 <tr key={index}>
                   <td className="border p-2">{balls.length - index}</td>
+                  <td className="border p-2">{ball.cOver}</td>
                   <td className="border p-2">{ball.ballNumber}</td>
                   <td className="border p-2">{ball.shotType}</td>
                   <td className="border p-2">{ball.batsman}</td>
