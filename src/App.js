@@ -11,7 +11,8 @@ export default function CricketScorer(){
     shotType: "",
     batsman: "",
     bowler: "",
-    lineLength: "",
+    line: "",
+    Length: "",
   });
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
@@ -20,7 +21,8 @@ export default function CricketScorer(){
   const [skipNextBallCount, setSkipNextBallCount] = useState(false);
   const [currentBatsman, setCurrentBatsman] = useState("");
   const [currentBowler, setCurrentBowler] = useState("");
-  const [currentLineAndLength, setCurrentLineAndLength] = useState("");
+  const [currentLine, setCurrentLine] = useState("");
+  const [currentLength, setCurrentLength] = useState("");
   const [currentBallType, setCurrentBallType] = useState("");
   const [currentShotType, setCurrentShotType] = useState("");
 
@@ -63,7 +65,8 @@ export default function CricketScorer(){
       wagonWheel: "",
       dismissalType: "",
       shotType: "",
-      lineLength: "",
+      line: "",
+      Length: "",
     }));
   };
    return (
@@ -161,15 +164,37 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Line and Length</label>
-            <input
-              type="text"
-              value={currentBall.lineLength}
-              onChange={(e) => handleChange("lineLength", e.target.value)}
+            <label className="block text-sm font-medium">Line</label>
+            <select
+              value={currentBall.line}
+              onChange={(e) => handleChange("line", e.target.value)}
               className="w-full border rounded p-2 mt-1"
-            />
+            >
+              <option value="">Select line</option>
+              <option value="LegSide">Legside</option>
+              <option value="On-Line">On-Line</option>
+              <option value="OffSide">Offside</option>
+              <option value="Outside-OffSide">Outside-Offside</option>
+              <option value="Wide-OffSide">Wide-Offside</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Length</label>
+            <select
+              value={currentBall.Length}
+              onChange={(e) => handleChange("Length", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            >
+              <option value="">Select Length</option>
+              <option value="Full-Toss">Full-Toss</option>
+              <option value="Yorker">Yorker</option>
+              <option value="Full-Length">Full-Length</option>
+              <option value="Back-of-Length">Back-of-Length</option>
+              <option value="Bouncer">Bouncer</option>
+            </select>
           </div>
         </div>
+        
 
         <button
           onClick={nextBall}
@@ -187,7 +212,8 @@ export default function CricketScorer(){
                 <th className="border p-2">Shot Type</th>
                 <th className="border p-2">Batsman</th>
                 <th className="border p-2">Bowler</th>
-                <th className="border p-2">Line & Length</th>
+                <th className="border p-2">Line</th>
+                <th className="border p-2">Length</th>
                 <th className="border p-2">Ball Landed</th>
                 <th className="border p-2">Extras</th>
                 <th className="border p-2">Dismissal</th>
@@ -203,7 +229,8 @@ export default function CricketScorer(){
                   <td className="border p-2">{ball.shotType}</td>
                   <td className="border p-2">{ball.batsman}</td>
                   <td className="border p-2">{ball.bowler}</td>
-                  <td className="border p-2">{ball.lineLength}</td>
+                  <td className="border p-2">{ball.line}</td>
+                  <td className="border p-2">{ball.Length}</td>
                   <td className="border p-2">{ball.wagonWheel}</td>
                   <td className="border p-2">{ball.extraType}</td>
                   <td className="border p-2">{ball.dismissalType}</td>
