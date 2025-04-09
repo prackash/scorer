@@ -28,7 +28,6 @@ export default function CricketScorer(){
   const [nonStriker, setNonStriker] = useState("");
   const [battingOrder, setBattingOrder] = useState([]);
   const [bowlingStats, setBowlingStats] = useState({});
-  const [ballSpeed, setBallSpeed] = useState(0);
   const wagonWheelZones = ["1stSlip","2ndSlip","3rdSlip","4thSlip","5thSlip",
     "BackwardPoint","BackwardShortLeg","BackwardSquareLeg",
     "Bowler","CowCorner","DeepBackwardPoint","DeepBackwardSquareLeg","DeepCover",
@@ -494,7 +493,7 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Ball Speed<br/></label>
+            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
             <input
               type="text"
               value={currentBall.ballSpeed}
@@ -541,7 +540,7 @@ export default function CricketScorer(){
                 <th className="border p-2">Line</th>
                 <th className="border p-2">Length</th>
                 <th className="border p-2">Ball Type</th>
-                <th className="border p-2">Ball Speed</th>
+                <th className="border p-2">Ball Speed (km/h)</th>
                 <th className="border p-2">Ball Landed</th>
                 <th className="border p-2">Extras</th>
                 <th className="border p-2">Dismissal</th>
