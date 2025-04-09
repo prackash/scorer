@@ -373,7 +373,7 @@ export default function CricketScorer(){
       <div className="side-section">
       <div className="batting-order">
         <div className="batting-table">
-          <h2 className="heading">Batting Order</h2>
+          <h2 className="heading">Batting Stats</h2>
           {/* <div className="input-group">
             <input
               type="text"
