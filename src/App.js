@@ -303,6 +303,11 @@ export default function CricketScorer(){
     }
     return prevOrder
     });
+
+    const dismissalTypesToReset = ["LBW", "Bowled", "Caught", "Stumped"];
+    if(dismissalTypesToReset.includes(currentBall.dismissalType)){
+      setStriker("");
+    }
   
   const isLegit = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball") && !currentBall.extraType.includes("No Ball + Free Hit") && !currentBall.extraType.includes("Bye") && !currentBall.extraType.includes("Leg Bye");
   if(isLegit){
@@ -324,6 +329,7 @@ export default function CricketScorer(){
           };
       });
     });
+    
   }
 
     setBalls(prevBalls => [
