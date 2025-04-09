@@ -22,6 +22,15 @@
     background-color: #f0fdf4;
     padding: 3rem;
   }
+  .fielder-alignment {
+    width: 250px;
+    background-color: #e0f2fe; /* light blue */
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+  }
+  
   .batting-order{
     width: 350px;
     background-color: #f3f4f6;

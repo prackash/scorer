@@ -41,6 +41,13 @@ export default function CricketScorer(){
     "StraightLongOff","StraightLongOn","WideLongOff","WideLongOn","WK"
   ]
 
+  const fielderZones =[...wagonWheelZones,"Injured"]
+  const [fielderAlignment, setFielderAlignment] = useState([]);
+  const [newFielder, setNewFielder] = useState("");
+  const [newFielderZone, setNewFielderZone] = useState("");
+  const [fielderSnapshots, setFielderSnapshots] = useState([]);
+
+
   const shots = ["Backfoot Defence","Cover Drive","Flick","Frontfoot Defence","Hook",
     "Innovative Shot","Late Cut","Left","Leg Glance ","No Shot","Off Drive","Ondrive",
     "Pull","Reverse Sweep","Scoop","Slog","Slog Sweep","Square Cut","Straight Drive",
@@ -72,6 +79,24 @@ export default function CricketScorer(){
     }
     
   };
+
+  const updateFielder=()=>{
+    if(!newFielder||!newFielderZone) return;
+    setFielderAlignment(prev => 
+      prev.map(fielder => 
+        fielder.name === newFielder ? {...fielder, zone: newFielderZone} : fielder
+      )
+    );
+
+    setFielderAlignment(prev => {
+      const exists = prev.find(fielder => fielder.name === newFielder);
+      return exists? prev:[...prev, {name: newFielder, zone: newFielderZone}];
+      });
+
+
+  setNewFielder("");
+  setNewFielderZone("");
+};
   const endOfOver = () => {
     console.log("End of Over");
     setBallCount(0);
@@ -88,6 +113,8 @@ export default function CricketScorer(){
       "Bowler",
       "Line",
       "Length",
+      "Ball Type",
+      "Ball Speed (km/h)",
       "Ball Landed",
       "Extras",
       "Dismissal",
@@ -103,6 +130,8 @@ export default function CricketScorer(){
       `"${ball.bowler}"`,
       `"${ball.line}"`,
       `"${ball.Length}"`,
+      `"${ball.ballType}"`,
+      `"${ball.ballSpeed}"`,
       `"${ball.wagonWheel}"`,
       `"${ball.extraType}"`,
       `"${ball.dismissalType}"`,
@@ -125,6 +154,39 @@ export default function CricketScorer(){
     link.setAttribute("download", "cricket_score.csv");
     link.click();
   };
+
+  const downloadFielderSnapshotCSV=()=>{
+    if(fielderSnapshots.length === 0) return;
+
+    const allFielderNames = new Set();
+    fielderSnapshots.forEach(snapshot => {
+      snapshot.fielderAlignment.forEach(fielder => {
+        allFielderNames.add(fielder.name);
+      });
+    });
+    const fielderNames = Array.from(allFielderNames);
+    const headers = ["Over/Ball", ...fielderNames];
+
+    const rows = fielderSnapshots.map(({over,ball, fielderAlignment}) => {
+      const row = [`${over}/${ball}`];
+      const fielderMap = Object.fromEntries(fielderAlignment.map(fielder => [fielder.name, fielder.zone]));
+      fielderNames.forEach(name => {
+        row.push(fielderMap[name] || "");
+      });
+
+      return row;
+    });
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "fielder_alignment.csv");
+    link.click();
+  }
   
   const deletePrev = () => {
     if (balls.length === 0) return;
@@ -190,7 +252,8 @@ export default function CricketScorer(){
       return [...prevOrder, { name: striker, runs: 0, fours: 0, sixes: 0, balls: 0 }];
     }
     return prevOrder
-  });
+    });
+  
   const isLegit = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball") && !currentBall.extraType.includes("No Ball + Free Hit") && !currentBall.extraType.includes("Bye") && !currentBall.extraType.includes("Leg Bye");
   if(isLegit){
     setBattingOrder(prevOrder => {
@@ -244,6 +307,15 @@ export default function CricketScorer(){
       ballSpeed: 0,
 
     }));
+    setFielderSnapshots(prev => [
+      ...prev,
+      {
+        over: over,
+        ball: thisBallNumber,
+        fielderAlignment: [...fielderAlignment]
+      }  
+    ]
+    );
   };
   
    return (
@@ -575,30 +647,57 @@ export default function CricketScorer(){
         )}
       </div>
       </div>
+      <div className="fielder-alignment">
+        <h2 className="heading">Fielder Alignment</h2>
+        <div className="input-group">
+          <input
+            type="text"
+            value={newFielder}
+            onChange={(e) => setNewFielder(e.target.value)}
+            placeholder="Fielder Name"
+            className="input-field"
+          />
+          <select
+            value={newFielderZone}
+            onChange={(e) => setNewFielderZone(e.target.value)}
+            className="w-full border rounded p-2 mt-1"
+          >
+            <option value="">Select Zone</option>
+            {fielderZones.map((zone) => (
+              <option key={zone} value={zone}>
+                {zone}
+              </option>
+            ))}
+          </select>
+          <button onClick={updateFielder} className="add-button">Set</button>
+        </div>
+        <table className="fielder-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Fielder</th>
+              <th>Zone</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fielderAlignment.map((fielder, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{fielder.name}</td>
+                <td>{fielder.zone}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button
+          onClick={downloadFielderSnapshotCSV}
+          className="download-button"
+        >
+          Download Fielder Alignment CSV
+        </button>
+
+      </div>
     </div>
   );
 }
 
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
