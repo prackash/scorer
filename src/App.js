@@ -41,7 +41,7 @@ export default function CricketScorer(){
     "StraightLongOff","StraightLongOn","WideLongOff","WideLongOn","WK"
   ]
 
-  const fielderZones =[...wagonWheelZones,"Injured"]
+  const fielderZones =["Yet to be Placed",...wagonWheelZones,"Injured"]
   const [fielderAlignment, setFielderAlignment] = useState([]);
   const [newFielder, setNewFielder] = useState("");
   const [newFielderZone, setNewFielderZone] = useState("");
@@ -63,7 +63,26 @@ export default function CricketScorer(){
       [field]: value
     }));
   if (field === "batsman") setStriker(value);
-    if (field === "nonStriker") setNonStriker(value);
+  if (field === "nonStriker") setNonStriker(value);
+  if (field === "bowler") {
+    setFielderAlignment(prev => {
+      if(value.trim()==="") return prev;
+      
+      return prev.map(f => {
+        if (f.name === value) {
+          return { ...f, zone: "Bowler" }; // update zone if player already exists
+        } else if (f.zone === "Bowler") {
+          return { ...f, zone: "Yet to be Placed" }; // clear previous bowler's zone
+        }
+        return f;
+      }).concat(
+        // If player wasn't in the list at all, add them
+        prev.some(f => f.name === value) ? [] : [{ name: value, zone: "Bowler" }]
+      );
+    });
+  }
+  
+  
   };
 
 
@@ -82,20 +101,46 @@ export default function CricketScorer(){
 
   const updateFielder=()=>{
     if(!newFielder||!newFielderZone) return;
-    setFielderAlignment(prev => 
-      prev.map(fielder => 
-        fielder.name === newFielder ? {...fielder, zone: newFielderZone} : fielder
-      )
-    );
-
+    const allowedDuplicates=[
+      fielderZones[0],
+      fielderZones[fielderZones.length - 1],
+    ];
     setFielderAlignment(prev => {
-      const exists = prev.find(fielder => fielder.name === newFielder);
-      return exists? prev:[...prev, {name: newFielder, zone: newFielderZone}];
+      const updated = prev.map(f => {
+        // Step 1: If someone else already has the desired zone (and it's not allowed to duplicate it),
+        // move them to "Yet to place"
+        if (
+          f.zone === newFielderZone &&
+          f.name !== newFielder &&
+          !allowedDuplicates.includes(newFielderZone)
+        ) {
+          return { ...f, zone: fielderZones[0] }; // move to "Yet to place"
+        }
+  
+        // Step 2: If this is the fielder we're updating, assign them the new zone
+        if (f.name === newFielder) {
+          return { ...f, zone: newFielderZone };
+        }
+  
+        return f;
       });
-
-
-  setNewFielder("");
-  setNewFielderZone("");
+  
+      // Step 3: If the fielder doesn't exist, add them
+      const exists = updated.some(f => f.name === newFielder);
+      if (!exists) {
+        updated.push({ name: newFielder, zone: newFielderZone });
+      }
+  
+      return updated;
+    });
+  
+    // Sync with bowler field if applicable
+    if (newFielderZone === "Bowler") {
+      handleChange("bowler", newFielder);
+    }
+  
+    setNewFielder("");
+    setNewFielderZone("");
 };
   const endOfOver = () => {
     console.log("End of Over");
@@ -103,6 +148,11 @@ export default function CricketScorer(){
     // setCurrentBall(prev => ({ ...prev, bowler: "" }));
     setOver(prev => prev + 1);
     handleChange("bowler", "");
+    setFielderAlignment(prev => 
+      prev.map(fielder => 
+        fielder.zone === "Bowler" ? { ...fielder, zone: fielderZones[0] } : fielder
+      )
+    )
   };
   const downloadCSV = () => {
     const headers = [
