@@ -16,6 +16,8 @@ export default function CricketScorer(){
     line: "",
     Length: "",
     switchStrikers: 0,
+    ballType: "",
+    ballSpeed:0
   });
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
@@ -26,6 +28,7 @@ export default function CricketScorer(){
   const [nonStriker, setNonStriker] = useState("");
   const [battingOrder, setBattingOrder] = useState([]);
   const [bowlingStats, setBowlingStats] = useState({});
+  const [ballSpeed, setBallSpeed] = useState(0);
   const wagonWheelZones = ["1stSlip","2ndSlip","3rdSlip","4thSlip","5thSlip",
     "BackwardPoint","BackwardShortLeg","BackwardSquareLeg",
     "Bowler","CowCorner","DeepBackwardPoint","DeepBackwardSquareLeg","DeepCover",
@@ -44,6 +47,10 @@ export default function CricketScorer(){
     "Pull","Reverse Sweep","Scoop","Slog","Slog Sweep","Square Cut","Straight Drive",
     "Sweep"]
 
+  const ballTypes = ["ArmBall","Bouncer","CarromBall","Doosra","FlickerBall",
+    "Flipper","Googly","Inswinger","KnuckleBall","LegBreak","LegCutter",
+    "OffBreak","OffCutter","OutSwinger","ReverseSwing","Slider","SlowerBall",
+    "Teesra","TopSpinner","TopSpinner","Yorker"]
   const handleChange=(field,value)=>{
     setCurrentBall(prev => ({
       ...prev,
@@ -234,6 +241,9 @@ export default function CricketScorer(){
       line: "",
       Length: "",
       switchStrikers: 0,
+      ballType: "",
+      ballSpeed: 0,
+
     }));
   };
   
@@ -318,17 +328,26 @@ export default function CricketScorer(){
         <div className="form-grid">
         <div className="input-grid">
           <div>
-            <label className="block text-sm font-medium">Runs</label>
-            <input
-              type="number"
+            <label className="block text-sm font-medium">Runs<br></br></label>
+            <select
+              
               value={currentBall.runs}
               onChange={(e) => handleChange("runs", parseInt(e.target.value))}
               className="w-full border rounded p-2 mt-1"
-            />
+            >
+             <option value="">Select Runs</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Extras</label>
+            <label className="block text-sm font-medium">Extras<br/></label>
             <select
               value={currentBall.extraType}
               onChange={(e) => handleChange("extraType", e.target.value)}
@@ -344,7 +363,7 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Wagon Wheel Zone</label>
+            <label className="block text-sm font-medium">Wagon Wheel Zone<br/></label>
             <select
               value={currentBall.wagonWheel}
               onChange={(e) => handleChange("wagonWheel", e.target.value)}
@@ -360,7 +379,7 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Dismissal Type</label>
+            <label className="block text-sm font-medium">Dismissal Type<br/></label>
             <select
               value={currentBall.dismissalType}
               onChange={(e) => handleChange("dismissalType", e.target.value)}
@@ -382,7 +401,7 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Shot Type</label>
+            <label className="block text-sm font-medium">Shot Type<br/></label>
             <select
               value={currentBall.shotType}
               onChange={(e) => handleChange("shotType", e.target.value)}
@@ -398,7 +417,7 @@ export default function CricketScorer(){
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Batsman-OnStike</label>
+            <label className="block text-sm font-medium">Batsman-OnStike<br/></label>
             <input
               type="text"
               value={striker}
@@ -407,7 +426,7 @@ export default function CricketScorer(){
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Bowler</label>
+            <label className="block text-sm font-medium">Bowler<br/></label>
             <input
               type="text"
               value={currentBall.bowler}
@@ -416,7 +435,7 @@ export default function CricketScorer(){
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Batsman-NonStike</label>
+            <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
             <input
               type="text"
               value={nonStriker}
@@ -428,7 +447,7 @@ export default function CricketScorer(){
           
 
           <div>
-            <label className="block text-sm font-medium">Line</label>
+            <label className="block text-sm font-medium">Line<br/></label>
             <select
               value={currentBall.line}
               onChange={(e) => handleChange("line", e.target.value)}
@@ -443,7 +462,7 @@ export default function CricketScorer(){
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium">Length</label>
+            <label className="block text-sm font-medium">Length<br/></label>
             <select
               value={currentBall.Length}
               onChange={(e) => handleChange("Length", e.target.value)}
@@ -457,6 +476,33 @@ export default function CricketScorer(){
               <option value="Bouncer">Bouncer</option>
             </select>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium">Ball Type<br/></label>
+            <select
+              value={currentBall.ballType}
+              onChange={(e) => handleChange("ballType", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+              >
+              <option value="">Select Shot</option>
+              {ballTypes.map((balt) => (
+                <option key={balt} value={balt}>
+                  {balt}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Ball Speed<br/></label>
+            <input
+              type="text"
+              value={currentBall.ballSpeed}
+              onChange={(e) => handleChange("ballSpeed", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+
         </div>
         <div className="image-wrapper">
           <img
@@ -494,11 +540,14 @@ export default function CricketScorer(){
                 <th className="border p-2">Bowler</th>
                 <th className="border p-2">Line</th>
                 <th className="border p-2">Length</th>
+                <th className="border p-2">Ball Type</th>
+                <th className="border p-2">Ball Speed</th>
                 <th className="border p-2">Ball Landed</th>
                 <th className="border p-2">Extras</th>
                 <th className="border p-2">Dismissal</th>
                 <th className="border p-2">Runs</th>
                 <th className="border p-2">Total Runs</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -512,11 +561,14 @@ export default function CricketScorer(){
                   <td className="border p-2">{ball.bowler}</td>
                   <td className="border p-2">{ball.line}</td>
                   <td className="border p-2">{ball.Length}</td>
+                  <td className="border p-2">{ball.ballType}</td>
+                  <td className="border p-2">{ball.ballSpeed}</td>
                   <td className="border p-2">{ball.wagonWheel}</td>
                   <td className="border p-2">{ball.extraType}</td>
                   <td className="border p-2">{ball.dismissalType}</td>
                   <td className="border p-2">{ball.runsThisBall}</td>
                   <td className="border p-2">{ball.cumulativeRuns}</td>
+                  
                 </tr>
               ))}
             </tbody>
