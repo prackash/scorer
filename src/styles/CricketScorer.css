@@ -24,12 +24,45 @@
   }
   .fielder-alignment {
     width: 250px;
-    background-color: #e0f2fe; /* light blue */
+    background-color: #e0f2fe; /* Light blue background */
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     font-size: 0.875rem;
   }
+  
+  .fielder-alignment h2 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  
+  .fielder-alignment table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .fielder-alignment th,
+  .fielder-alignment td {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 0.875rem;
+  }
+  
+  .fielder-alignment thead {
+    background-color: #bae6fd; /* Slightly deeper blue */
+    font-weight: 600;
+  }
+  
+  .fielder-alignment tbody tr:nth-child(even) {
+    background-color: #f9fafb; /* Light gray alternate rows */
+  }
+  
   
   .batting-order{
     width: 350px;

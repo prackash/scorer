@@ -548,12 +548,13 @@ export default function CricketScorer(){
           </div>
           <div>
             <label className="block text-sm font-medium">Bowler<br/></label>
-            <input
+            <p>{currentBall.bowler}</p>
+            {/* <input
               type="text"
               value={currentBall.bowler}
               onChange={(e) => handleChange("bowler", e.target.value)}
               className="w-full border rounded p-2 mt-1"
-            />
+            /> */}
           </div>
           <div>
             <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
@@ -734,7 +735,19 @@ export default function CricketScorer(){
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{fielder.name}</td>
-                <td>{fielder.zone}</td>
+                <td>
+                  <select
+                    value={fielder.zone}
+                    onChange={(e) => {setNewFielder(fielder.name);
+                      setNewFielderZone(e.target.value);
+                      updateFielder();}}
+                    className="w-full p-1 border rounded"
+                  >
+                    {fielderZones.map((zone, i) => (
+                      <option key={i} value={zone}>{zone}</option>
+                    ))}
+                  </select>
+                </td>
               </tr>
             ))}
           </tbody>
