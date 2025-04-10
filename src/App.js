@@ -25,7 +25,7 @@ export default function CricketScorer(){
   const runOptions = [0,1,2,3,4,5,6];
   const extraOptions = ["","Wide","No Ball","Free Hit"];
   const noBat=["","Bye","Leg Bye"];
-  const dismissalOptions = ["Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
+  const dismissalOptions = ["","Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
   const bowlerEndOptions = ["Pavillion","Far End"];
   const lineOptions = ["LegSide","Middle","OffSide","Outside-OffSide","Wide-OffSide"];
   const lengthOptions = ["Full-Toss","Yorker","Full-Length","Back-of-Length","Bouncer"];
