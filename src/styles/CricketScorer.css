@@ -13,6 +13,9 @@
   gap: 1.5rem;
   width: 400px;
 }
+.fielder-stats{
+  flex-direction: column;
+}
 .scorer-container {
     min-height: 100vh;
     display: flex;

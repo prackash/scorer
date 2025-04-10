@@ -17,7 +17,10 @@ export default function CricketScorer(){
     Length: "",
     switchStrikers: 0,
     ballType: "",
-    ballSpeed:0
+    ballSpeed:0,
+    aroundTheWicket: "",
+    deadBall:"",
+    end:"",
   });
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
@@ -238,6 +241,8 @@ export default function CricketScorer(){
     link.click();
   }
   
+
+  // NEED TO HANDLE LOGIC FOR BATTING STATS AND BOWLING STATS REMOVAL AND REVERTING END OF OVER
   const deletePrev = () => {
     if (balls.length === 0) return;
   
@@ -361,6 +366,9 @@ export default function CricketScorer(){
       switchStrikers: 0,
       ballType: "",
       ballSpeed: 0,
+      aroundTheWicket:"",
+      deadBall:"",
+      end:"",
 
     }));
     setFielderSnapshots(prev => [
@@ -450,6 +458,7 @@ export default function CricketScorer(){
       </div>
       </div>
       <div className="scorer-container">
+        <p> Wind Speed || Wind Direction</p>
       <div className="scorer-card">
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
@@ -486,6 +495,7 @@ export default function CricketScorer(){
               <option value="Bye">Bye</option>
               <option value="Leg Bye">Leg Bye</option>
               <option value="No Ball + Free Hit">No Ball + Free Hit</option>
+              <option value="Cap">Cap</option>
             </select>
           </div>
 
@@ -522,6 +532,7 @@ export default function CricketScorer(){
               <option value="Obstructing the Field">Obstructing the Field</option>
               <option value="Handled the Ball">Handled the Ball</option>
               <option value="Timed Out">Timed Out</option>
+              <option value="Hit Ball Twice">Hit Ball Twice</option>
               <option value="Retired Hurt">Retired Hurt</option>
               <option value="Other">Other</option>
             </select>
@@ -553,14 +564,16 @@ export default function CricketScorer(){
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Bowler<br/></label>
-            <p>{currentBall.bowler}</p>
-            {/* <input
-              type="text"
-              value={currentBall.bowler}
-              onChange={(e) => handleChange("bowler", e.target.value)}
+            <label className="block text-sm font-medium">Bowler End<br/></label>
+            <select
+              value={currentBall.end}
+              onChange={(e) => handleChange("end", e.target.value)}
               className="w-full border rounded p-2 mt-1"
-            /> */}
+            >
+              <option value="">Select Option</option>
+              <option value="Yes">Pavillion</option>
+              <option value="No">Other</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
@@ -630,6 +643,33 @@ export default function CricketScorer(){
               className="w-full border rounded p-2 mt-1"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium">Around the Wicket<br/></label>
+            <select
+              value={currentBall.aroundTheWicket}
+              onChange={(e) => handleChange("aroundTheWicket", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            >
+              <option value="">Select Option</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Dead Ball<br/></label>
+            <select
+              value={currentBall.deadBall}
+              onChange={(e) => handleChange("deadBall", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            >
+              <option value="">Select Option</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
 
         </div>
         <div className="image-wrapper">
@@ -704,6 +744,7 @@ export default function CricketScorer(){
         )}
       </div>
       </div>
+      <div className="fielder-stats">
       <div className="fielder-alignment">
         <h2 className="heading">Fielder Alignment</h2>
         <div className="input-group">
@@ -765,6 +806,10 @@ export default function CricketScorer(){
           Download Fielder Alignment CSV
         </button>
 
+      </div>
+      <div>
+        <p>Misfielding and expectional fielding section</p>
+      </div>
       </div>
     </div>
   );
