@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/prackash/scorer/static/css/main.56fcd9b0.css",
-    "main.js": "/prackash/scorer/static/js/main.f78afb2f.js",
-    "static/js/453.1cd7b3b1.chunk.js": "/prackash/scorer/static/js/453.1cd7b3b1.chunk.js",
-    "static/media/wagonwheel.jpg": "/prackash/scorer/static/media/wagonwheel.d90f3b64941d2a847491.jpg",
-    "index.html": "/prackash/scorer/index.html",
-    "main.56fcd9b0.css.map": "/prackash/scorer/static/css/main.56fcd9b0.css.map",
-    "main.f78afb2f.js.map": "/prackash/scorer/static/js/main.f78afb2f.js.map",
-    "453.1cd7b3b1.chunk.js.map": "/prackash/scorer/static/js/453.1cd7b3b1.chunk.js.map"
+    "main.css": "/scorer/static/css/main.56fcd9b0.css",
+    "main.js": "/scorer/static/js/main.9dfd9c0c.js",
+    "static/js/453.1cd7b3b1.chunk.js": "/scorer/static/js/453.1cd7b3b1.chunk.js",
+    "static/media/wagonwheel.jpg": "/scorer/static/media/wagonwheel.d90f3b64941d2a847491.jpg",
+    "index.html": "/scorer/index.html",
+    "main.56fcd9b0.css.map": "/scorer/static/css/main.56fcd9b0.css.map",
+    "main.9dfd9c0c.js.map": "/scorer/static/js/main.9dfd9c0c.js.map",
+    "453.1cd7b3b1.chunk.js.map": "/scorer/static/js/453.1cd7b3b1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.56fcd9b0.css",
-    "static/js/main.f78afb2f.js"
+    "static/js/main.9dfd9c0c.js"
   ]
 }
