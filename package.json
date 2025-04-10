@@ -2,7 +2,7 @@
   "name": "scorer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://prackash.github.io/scorer",
+  "homepage": "http://prackash.github.io/scorer",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
