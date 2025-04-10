@@ -1,5 +1,4 @@
-// import logo from './logo.svg';
-// import './App.css';
+
 import React, {useState} from "react"
 import wagonwheel from "./assets/wagonwheel.jpg"
 import "./styles/CricketScorer.css"
@@ -8,6 +7,7 @@ export default function CricketScorer(){
   const [currentBall, setCurrentBall] = useState({
     runs: 0,
     extraType: "",
+    nbat:"",
     wagonWheel: "",
     dismissalType: "",
     shotType: "",
@@ -18,15 +18,26 @@ export default function CricketScorer(){
     switchStrikers: 0,
     ballType: "",
     ballSpeed:0,
-    aroundTheWicket: "",
-    deadBall:"",
+    aroundTheWicket: "No",
+    deadBall:"No",
     end:"",
   });
+  const runOptions = [0,1,2,3,4,5,6];
+  const extraOptions = ["Wide","No Ball","Free Hit"];
+  const noBat=["Bye","Leg Bye"];
+  const dismissalOptions = ["Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
+  const bowlerEndOptions = ["Pavillion","Far End"];
+  const lineOptions = ["LegSide","Middle","OffSide","Outside-OffSide","Wide-OffSide"];
+  const lengthOptions = ["Full-Toss","Yorker","Full-Length","Back-of-Length","Bouncer"];
+  // const aroundTheWicketOptions = ["No","Yes"];
+  // const deadBallOptions = ["No","Yes"];
+
+
+
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
   const [over,setOver]=useState(0);
   const [ballCount, setBallCount] = useState(0);
-  const [skipNextBallCount, setSkipNextBallCount] = useState(false);
   const [striker, setStriker] = useState("");
   const [nonStriker, setNonStriker] = useState("");
   const [battingOrder, setBattingOrder] = useState([]);
@@ -51,15 +62,15 @@ export default function CricketScorer(){
   const [fielderSnapshots, setFielderSnapshots] = useState([]);
 
 
-  const shots = ["Backfoot Defence","Cover Drive","Flick","Frontfoot Defence","Hook",
-    "Innovative Shot","Late Cut","Left","Leg Glance ","No Shot","Off Drive","Ondrive",
+  const shots = ["No Shot","Backfoot Defence","Cover Drive","Flick","Frontfoot Defence","Hook",
+    "Innovative Shot","Late Cut","Left","Leg Glance","Off Drive","Ondrive",
     "Pull","Reverse Sweep","Scoop","Slog","Slog Sweep","Square Cut","Straight Drive",
     "Sweep"]
 
   const ballTypes = ["ArmBall","Bouncer","CarromBall","Doosra","FlickerBall",
     "Flipper","Googly","Inswinger","KnuckleBall","LegBreak","LegCutter",
     "OffBreak","OffCutter","OutSwinger","ReverseSwing","Slider","SlowerBall",
-    "Teesra","TopSpinner","TopSpinner","Yorker"]
+    "Teesra","TopSpinner","Yorker"]
   const handleChange=(field,value)=>{
     setCurrentBall(prev => ({
       ...prev,
@@ -84,8 +95,6 @@ export default function CricketScorer(){
       );
     });
   }
-  
-  
   };
 
 
@@ -247,6 +256,65 @@ export default function CricketScorer(){
     if (balls.length === 0) return;
   
     const [latestBall, ...remainingBalls] = balls;
+    // 1. Revert bowling stats
+setBowlingStats(prevStats => {
+  const bowler = latestBall.bowler;
+  if (!bowler || !prevStats[bowler]) return prevStats;
+
+  const isWideOrNoBall = latestBall.extraType.includes("Wide") || latestBall.extraType.includes("No Ball")|| latestBall.extraType.includes("Free Hit");
+  const isValidBall = !isWideOrNoBall;
+  const extras = latestBall.extraType ? 1 : 0;
+  const runs = latestBall.runsThisBall;
+  const isWicket = latestBall.dismissalType !== "";
+
+  const current = prevStats[bowler];
+
+  return {
+    ...prevStats,
+    [bowler]: {
+      balls: Math.max(0, current.balls - (isValidBall ? 1 : 0)),
+      runs: Math.max(0, current.runs - runs),
+      wickets: Math.max(0, current.wickets - (isWicket ? 1 : 0)),
+      extras: Math.max(0, current.extras - extras),
+    },
+  };
+});
+
+// 3. Revert batting stats
+// 3. Revert batting stats
+setBattingOrder(prevOrder => {
+  const batter = latestBall.batsman;
+  if (!batter) return prevOrder;
+
+  const isLegit = !latestBall.extraType.includes("Wide") &&
+                  !latestBall.extraType.includes("No Ball") &&
+                  !latestBall.extraType.includes("Free Hit") &&
+                  !latestBall.nbat.includes("Bye") &&
+                  !latestBall.nbat.includes("Leg Bye");
+
+  if (!isLegit) return prevOrder;
+
+  const runs = latestBall.runs;
+  const isFour = runs === 4;
+  const isSix = runs === 6;
+
+  return prevOrder.map(player => {
+    if (player.name !== batter) return player;
+
+    return {
+      ...player,
+      runs: Math.max(0, player.runs - runs),
+      balls: Math.max(0, player.balls - 1),
+      fours: Math.max(0, player.fours - (isFour ? 1 : 0)),
+      sixes: Math.max(0, player.sixes - (isSix ? 1 : 0)),
+    };
+  });
+});
+
+
+
+
+
   
     // Adjust ball/over count
     const isValidBall = !latestBall.extraType.includes("Wide") && !latestBall.extraType.includes("No Ball");
@@ -264,18 +332,19 @@ export default function CricketScorer(){
     if(currentBall.extraType==="Wide" || currentBall.extraType==="No Ball"){
       extraRuns=1;
     }
-    else if (currentBall.extraType ==="No Ball + Free Hit"){
-      extraRuns=1;
-      setSkipNextBallCount(true);
-    }
+    
     if(currentBall.runs%2===1){
       currentBall.switchStrikers+=1;
     }
 
-    const isValidBall = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball");
-    const thisBallNumber = skipNextBallCount ? ballCount : ballCount + (isValidBall ? 1 : 0);
-    if(!skipNextBallCount && isValidBall) setBallCount(thisBallNumber);
-    if(skipNextBallCount) setSkipNextBallCount(false);
+    const isValidBall = !(
+      currentBall.extraType.includes("Wide") ||
+      currentBall.extraType.includes("No Ball") ||
+      currentBall.extraType.includes("Free Hit")
+    );
+    const thisBallNumber = ballCount + (isValidBall ? 1 : 0);
+    if(isValidBall) setBallCount(thisBallNumber);
+    
     const totalForBall = currentBall.runs + extraRuns;
     const updatedTotalRuns = totalRuns + totalForBall;
     setTotalRuns(updatedTotalRuns);
@@ -283,7 +352,7 @@ export default function CricketScorer(){
     setBowlingStats(prevStats => {
       const bowler = currentBall.bowler;
       if(!bowler) return prevStats;
-      const isWideOrNoBall = currentBall.extraType.includes("Wide") || currentBall.extraType.includes("No Ball");
+      const isWideOrNoBall = currentBall.extraType.includes("Wide") || currentBall.extraType.includes("No Ball")|| currentBall.extraType.includes("Free Hit");
       const isValidBall = !isWideOrNoBall;
       const extras = currentBall.extraType ? 1 : 0;
       const runs = currentBall.runs + extras;
@@ -314,8 +383,10 @@ export default function CricketScorer(){
       setStriker("");
     }
   
-  const isLegit = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball") && !currentBall.extraType.includes("No Ball + Free Hit") && !currentBall.extraType.includes("Bye") && !currentBall.extraType.includes("Leg Bye");
-  if(isLegit){
+  const isLegit = !currentBall.extraType.includes("Wide") && !currentBall.extraType.includes("No Ball") && !currentBall.extraType.includes("Free Hit") && !currentBall.nbat.includes("Bye") && !currentBall.nbat.includes("Leg Bye");
+  const isFreeHit = currentBall.extraType === "Free Hit";
+  const isByeOrLegBye = currentBall.nbat === "Bye" || currentBall.nbat === "Leg Bye";
+if ((isLegit || isFreeHit) && !isByeOrLegBye) {
     setBattingOrder(prevOrder => {
       const runs = currentBall.runs;
       const name = striker;
@@ -328,7 +399,7 @@ export default function CricketScorer(){
           return{
             ...player,
             runs: player.runs + runs,
-            balls: player.balls + 1,
+            balls: player.balls + (isLegit?1:0),
             fours: player.fours + (isFour ? 1 : 0),
             sixes: player.sixes + (isSix ? 1 : 0),
           };
@@ -358,6 +429,7 @@ export default function CricketScorer(){
       ...prev,
       runs: 0,
       extraType: "",
+      nbat:"",
       wagonWheel: "",
       dismissalType: "",
       shotType: "",
@@ -366,9 +438,7 @@ export default function CricketScorer(){
       switchStrikers: 0,
       ballType: "",
       ballSpeed: 0,
-      aroundTheWicket:"",
-      deadBall:"",
-      end:"",
+      deadBall:"No",
 
     }));
     setFielderSnapshots(prev => [
@@ -463,43 +533,54 @@ export default function CricketScorer(){
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
         <div className="input-grid">
-          <div>
-            <label className="block text-sm font-medium">Runs<br></br></label>
-            <select
-              
-              value={currentBall.runs}
-              onChange={(e) => handleChange("runs", parseInt(e.target.value))}
-              className="w-full border rounded p-2 mt-1"
-            >
-             <option value="">Select Runs</option>
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              </select>
+          <div className="col-span-2">
+            <label className="block text-sm font-medium">Runs<br /></label>
+            <div className="button-group">
+              {runOptions.map((run) => (
+                <button
+                  key={run}
+                  className={`toggle-button ${currentBall.runs === run ? 'active' : ''}`}
+                  onClick={() => handleChange("runs", run)}
+                  type="button"
+                >
+                  {run}
+                </button>
+              ))}
+            </div>
           </div>
-
           <div>
-            <label className="block text-sm font-medium">Extras<br/></label>
-            <select
-              value={currentBall.extraType}
-              onChange={(e) => handleChange("extraType", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">No Extra</option>
-              <option value="Wide">Wide</option>
-              <option value="No Ball">No Ball</option>
-              <option value="Bye">Bye</option>
-              <option value="Leg Bye">Leg Bye</option>
-              <option value="No Ball + Free Hit">No Ball + Free Hit</option>
-              <option value="Cap">Cap</option>
-            </select>
+            <label className="block text-sm font-medium">Extras<br /></label>
+            <div className="button-group">
+              {extraOptions.map((extra) => (
+                <button
+                  key={extra}
+                  className={`toggle-button ${currentBall.extraType === extra ? 'active' : ''}`}
+                  onClick={() => handleChange("extraType", extra)}
+                  type="button"
+                >
+                  {extra}
+                </button>
+              ))}
+            </div>
           </div>
-
           <div>
+            <label className="block text-sm font-medium">No Bat Contact<br /></label>
+            <div className="button-group">
+              {noBat.map((NB) => (
+                <button
+                  key={NB}
+                  className={`toggle-button ${currentBall.nbat === NB ? 'active' : ''}`}
+                  onClick={() => handleChange("nbat", NB)}
+                  type="button"
+                >
+                  {NB}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+
+          <div className="col-span-2">
             <label className="block text-sm font-medium">Wagon Wheel Zone<br/></label>
             <select
               value={currentBall.wagonWheel}
@@ -515,29 +596,92 @@ export default function CricketScorer(){
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium">Dismissal Type<br/></label>
-            <select
-              value={currentBall.dismissalType}
-              onChange={(e) => handleChange("dismissalType", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">No Dismissal</option>
-              <option value="Bowled">Bowled</option>
-              <option value="Caught">Caught</option>
-              <option value="LBW">LBW</option>
-              <option value="Run Out">Run Out</option>
-              <option value="Stumped">Stumped</option>
-              <option value="Hit Wicket">Hit Wicket</option>
-              <option value="Obstructing the Field">Obstructing the Field</option>
-              <option value="Handled the Ball">Handled the Ball</option>
-              <option value="Timed Out">Timed Out</option>
-              <option value="Hit Ball Twice">Hit Ball Twice</option>
-              <option value="Retired Hurt">Retired Hurt</option>
-              <option value="Other">Other</option>
-            </select>
+          <div className="col-span-2">
+            <label className="block text-sm font-medium">Dismissal Type<br /></label>
+            <div className="button-group">
+              {dismissalOptions.map((dis) => (
+                <button
+                  key={dis}
+                  className={`toggle-button ${currentBall.dismissalType === dis ? 'active' : ''}`}
+                  onClick={() => handleChange("dismissalType", dis)}
+                  type="button"
+                >
+                  {dis}
+                </button>
+              ))}
+            </div>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium">Batsman-OnStike<br/></label>
+            <input
+              type="text"
+              value={striker}
+              onChange={(e) => handleChange("batsman", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+          
+
+          <div>
+            <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
+            <input
+              type="text"
+              value={nonStriker}
+              onChange={(e) => setNonStriker(e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+
+          
+          <div className="col-span-2">
+            <label className="block text-sm font-medium">Line<br /></label>
+            <div className="button-group">
+              {lineOptions.map((line) => (
+                <button
+                  key={line}
+                  className={`toggle-button ${currentBall.line === line ? 'active' : ''}`}
+                  onClick={() => handleChange("line", line)}
+                  type="button"
+                >
+                  {line}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="col-span-2">
+            <label className="block text-sm font-medium">Length<br /></label>
+            <div className="button-group">
+              {lengthOptions.map((length) => (
+                <button
+                  key={length}
+                  className={`toggle-button ${currentBall.Length === length ? 'active' : ''}`}
+                  onClick={() => handleChange("Length", length)}
+                  type="button"
+                >
+                  {length}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* <div className="col-span-2">
+            <label className="block text-sm font-medium">Shot Type<br /></label>
+            <div className="button-group">
+              {shots.map((shot) => (
+                <button
+                  key={shot}
+                  className={`toggle-button ${currentBall.shotType === shot ? 'active' : ''}`}
+                  onClick={() => handleChange("shotType", shot)}
+                  type="button"
+                >
+                  {shot}
+                </button>
+              ))}
+            </div>
+          </div> */}
+
+          
           <div>
             <label className="block text-sm font-medium">Shot Type<br/></label>
             <select
@@ -554,69 +698,21 @@ export default function CricketScorer(){
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium">Batsman-OnStike<br/></label>
-            <input
-              type="text"
-              value={striker}
-              onChange={(e) => handleChange("batsman", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Bowler End<br/></label>
-            <select
-              value={currentBall.end}
-              onChange={(e) => handleChange("end", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">Select Option</option>
-              <option value="Yes">Pavillion</option>
-              <option value="No">Other</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
-            <input
-              type="text"
-              value={nonStriker}
-              onChange={(e) => setNonStriker(e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
-
-          
-
-          <div>
-            <label className="block text-sm font-medium">Line<br/></label>
-            <select
-              value={currentBall.line}
-              onChange={(e) => handleChange("line", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">Select line</option>
-              <option value="LegSide">Legside</option>
-              <option value="On-Line">On-Line</option>
-              <option value="OffSide">Offside</option>
-              <option value="Outside-OffSide">Outside-Offside</option>
-              <option value="Wide-OffSide">Wide-Offside</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Length<br/></label>
-            <select
-              value={currentBall.Length}
-              onChange={(e) => handleChange("Length", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">Select Length</option>
-              <option value="Full-Toss">Full-Toss</option>
-              <option value="Yorker">Yorker</option>
-              <option value="Full-Length">Full-Length</option>
-              <option value="Back-of-Length">Back-of-Length</option>
-              <option value="Bouncer">Bouncer</option>
-            </select>
-          </div>
+          {/* <div className="col-span-2">
+            <label className="block text-sm font-medium">Ball Type<br /></label>
+            <div className="button-group">
+              {ballTypes.map((balt) => (
+                <button
+                  key={balt}
+                  className={`toggle-button ${currentBall.ballType === balt ? 'active' : ''}`}
+                  onClick={() => handleChange("ballType", balt)}
+                  type="button"
+                >
+                  {balt}
+                </button>
+              ))}
+            </div>
+          </div> */}
 
           <div>
             <label className="block text-sm font-medium">Ball Type<br/></label>
@@ -633,6 +729,28 @@ export default function CricketScorer(){
               ))}
             </select>
           </div>
+          
+
+          <div>
+            <label className="block text-sm font-medium">Bowler End<br /></label>
+            <div className="button-group">
+              {bowlerEndOptions.map((be) => (
+                <button
+                  key={be}
+                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
+                  onClick={() => handleChange("end", be)}
+                  type="button"
+                >
+                  {be}
+                </button>
+              ))}
+            </div>
+          </div>
+
+
+          
+
+            
 
           <div>
             <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
@@ -643,32 +761,32 @@ export default function CricketScorer(){
               className="w-full border rounded p-2 mt-1"
             />
           </div>
+          
 
-          <div>
-            <label className="block text-sm font-medium">Around the Wicket<br/></label>
-            <select
-              value={currentBall.aroundTheWicket}
-              onChange={(e) => handleChange("aroundTheWicket", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">Select Option</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
+            <div>
+                <label className="block text-sm font-medium">Around the Wicket<br/></label>
+                <select
+                  value={currentBall.aroundTheWicket}
+                  onChange={(e) => handleChange("aroundTheWicket", e.target.value)}
+                  className="w-full border rounded p-2 mt-1"
+                >
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium">Dead Ball<br/></label>
-            <select
-              value={currentBall.deadBall}
-              onChange={(e) => handleChange("deadBall", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">Select Option</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
+            <div>
+              <label className="block text-sm font-medium">Dead Ball<br/></label>
+              <select
+                value={currentBall.deadBall}
+                onChange={(e) => handleChange("deadBall", e.target.value)}
+                className="w-full border rounded p-2 mt-1"
+              >
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+                
+              </select>
+            </div>
 
 
         </div>
