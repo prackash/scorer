@@ -76,6 +76,8 @@ export default function CricketScorer(){
     "Flipper","Googly","Inswinger","KnuckleBall","LegBreak","LegCutter",
     "OffBreak","OffCutter","OutSwinger","ReverseSwing","Slider","SlowerBall",
     "Teesra","TopSpinner","Yorker"]
+  
+    
   const handleChange=(field,value)=>{
     setCurrentBall(prev => ({
       ...prev,
@@ -159,6 +161,7 @@ export default function CricketScorer(){
     setNewFielder("");
     setNewFielderZone("");
 };
+
   const endOfOver = () => {
     console.log("End of Over");
     setBallCount(0);
@@ -171,6 +174,7 @@ export default function CricketScorer(){
       )
     )
   };
+ 
   const downloadCSV = () => {
     const headers = [
       "Over",
@@ -285,8 +289,9 @@ export default function CricketScorer(){
     link.setAttribute("download", "fielding_notes.csv");
     link.click();
   };
+
   
-  
+
 
   const deletePrev = () => {
     if (balls.length === 0) return;
@@ -508,7 +513,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         <div className="batting-table">
           <h2 className="heading">Batting Stats</h2>
           <div className = "scrollable-table-container">
-          <table className="battable">
+          <table  id="battingStatsTable" class="battable">
             <thead className="batthead">
               <tr>
                 <th className="batthead">Batsman</th>
@@ -537,12 +542,15 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             </tbody>
           </table>
           </div>
+          {/* <button class="download-button" onclick={downloadBattingStats}>
+          Download Batting Stats
+          </button> */}
         </div>
       </div>
       <div className="Bowling">
         <h2 className="heading">Bowling Stats</h2>
         <div className = "scrollable-table-container">
-          <table>
+          <table  id="bowlingStatsTable" class="Bowling" >
           <thead>
             <tr>
               <th>Bowler</th>
@@ -568,10 +576,36 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           </tbody>
         </table>
         </div>
+        {/* <button class="download-button" onclick={downloadBowlingStats}>
+          Download Bowling Stats
+        </button> */}
       </div>
       </div>
       <div className="scorer-container">
-        <p> Wind Speed || Wind Direction</p>
+      <div class="wind-info">
+  <div class="input-group">
+    <label for="windSpeed">Wind Speed</label>
+    <input
+      id="windSpeed"
+      type="text"
+      placeholder="e.g. 10 km/h"
+      class="input-field"
+    />
+  </div>
+
+  <div class="input-group">
+    <label for="windDirection">Wind Direction (°)</label>
+    <input
+      id="windDirection"
+      type="number"
+      min="0"
+      max="360"
+      placeholder="0–360"
+      class="input-field"
+    />
+  </div>
+</div>
+
       <div className="scorer-card">
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
