@@ -180,10 +180,14 @@ export default function CricketScorer(){
       "Bowler",
       "Line",
       "Length",
+      "Bowler End",
+      "Around the Wicket",
       "Ball Type",
       "Ball Speed (km/h)",
       "Ball Landed",
       "Extras",
+      "No Bat Contact",
+      "Dead Ball",
       "Dismissal",
       "Runs",
       "Total Runs"
@@ -197,10 +201,14 @@ export default function CricketScorer(){
       `"${ball.bowler}"`,
       `"${ball.line}"`,
       `"${ball.Length}"`,
+      `"${ball.end}"`,
+      `"${ball.aroundTheWicket}"`,
       `"${ball.ballType}"`,
       `"${ball.ballSpeed}"`,
       `"${ball.wagonWheel}"`,
       `"${ball.extraType}"`,
+      `"${ball.nbat}"`,
+      `"${ball.deadBall}"`,
       `"${ball.dismissalType}"`,
       `"${ball.runsThisBall}"`,
       `"${ball.cumulativeRuns}"`
@@ -856,7 +864,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         <button onClick={downloadCSV} className="download-button">
           Download CSV
         </button>
-
+        <div className="scorer-table-container">
         {balls.length > 0 && (
           <table className="table">
             <thead>
@@ -869,10 +877,14 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
                 <th className="border p-2">Bowler</th>
                 <th className="border p-2">Line</th>
                 <th className="border p-2">Length</th>
+                <th className="border p-2">Bowler End</th>
+                <th className="border p-2">Around the Wicket</th>
                 <th className="border p-2">Ball Type</th>
                 <th className="border p-2">Ball Speed (km/h)</th>
                 <th className="border p-2">Ball Landed</th>
                 <th className="border p-2">Extras</th>
+                <th className="border p-2">No Bat Contact</th>
+                <th className="border p-2">Dead Ball</th>
                 <th className="border p-2">Dismissal</th>
                 <th className="border p-2">Runs</th>
                 <th className="border p-2">Total Runs</th>
@@ -890,10 +902,14 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
                   <td className="border p-2">{ball.bowler}</td>
                   <td className="border p-2">{ball.line}</td>
                   <td className="border p-2">{ball.Length}</td>
+                  <td className="border p-2">{ball.end}</td>
+                  <td className="border p-2">{ball.aroundTheWicket}</td>
                   <td className="border p-2">{ball.ballType}</td>
                   <td className="border p-2">{ball.ballSpeed}</td>
                   <td className="border p-2">{ball.wagonWheel}</td>
                   <td className="border p-2">{ball.extraType}</td>
+                  <td className="border p-2">{ball.nbat}</td>
+                  <td className="border p-2">{ball.deadBall}</td>
                   <td className="border p-2">{ball.dismissalType}</td>
                   <td className="border p-2">{ball.runsThisBall}</td>
                   <td className="border p-2">{ball.cumulativeRuns}</td>
@@ -903,6 +919,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             </tbody>
           </table>
         )}
+        </div>
       </div>
       </div>
       <div className="fielder-stats">

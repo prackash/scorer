@@ -194,6 +194,19 @@
     justify-content: center;
     align-items: flex-start;
   }
+  .image-wrapper img{
+    max-width: 350px; /* adjust as needed */
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .image-wrapper img {
+      max-width: 90%;
+    }
+  }
+  
   
   .submit-button {
     width: 50%;
@@ -210,12 +223,24 @@
     background-color: #1d4ed8;
   }
   
-  .table {
+  .scorer-table-container {
     width: 100%;
-    margin-top: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+  
+  .table {
+    width: max-content;
+    margin: 1.5rem auto 0 auto;
     border-collapse: collapse;
     font-size: 0.875rem;
+    background-color: white;
   }
+  .table th,
+.table td {
+  white-space: nowrap;
+}
+  
   .delete-button {
     width: 50%;
     background-color: #ef4444;
