@@ -2,7 +2,7 @@
 import React, {useState} from "react"
 import wagonwheel from "./assets/wagonwheel.jpg"
 import "./styles/CricketScorer.css"
-
+import * as XLSX from "xlsx";
 export default function CricketScorer(){
   const [currentBall, setCurrentBall] = useState({
     runs: 0,
@@ -23,7 +23,12 @@ export default function CricketScorer(){
     end:"",
   });
   const runOptions = [0,1,2,3,4,5,6];
-  
+  const [currentTossWonBy, setCurrentTossWonBy] = useState('');
+  const [currentTossDecision, setCurrentTossDecision] = useState('');
+
+  const tossWonByOptions = ['Team A', 'Team B'];
+  const tossDecisionOptions = ['Bat', 'Bowl'];
+
   const extraOptions = ["","Wide","No Ball","Free Hit"];
   const noBat=["","Bye","Leg Bye"];
   const dismissalOptions = ["","Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
@@ -318,6 +323,8 @@ export default function CricketScorer(){
     link.click();
   };
   
+
+  
   // Function to download bowling stats as CSV
   const downloadBowlingStats = () => {
     const headers = ['Bowler', 'Overs', 'Runs', 'Wickets', 'Extras', 'Economy'];
@@ -347,8 +354,143 @@ export default function CricketScorer(){
     link.click();
   };
 
+  const handleTossWonByChange = (team) => {
+    setCurrentTossWonBy(team);
+  };
+
+  // Handle Toss Decision Button Click
+  const handleTossDecisionChange = (decision) => {
+    setCurrentTossDecision(decision);
+  };
+
+  const downloadFullReport = () => {
+    const venue = document.getElementById('venue').value;
+    const teamA = document.getElementById('teamA').value;
+    const teamB = document.getElementById('teamB').value;
+    const tossWonBy = currentTossWonBy;
+    const tossDecision = currentTossDecision;
+    const umpire1 = document.getElementById('umpire1').value;
+    const umpire2 = document.getElementById('umpire2').value;
+    const scorer1 = document.getElementById('scorer1').value;
+    const scorer2 = document.getElementById('scorer2').value;
+    const windSpeed = document.getElementById('windSpeed').value || 'N/A'; // Default to 'N/A' if empty
+    const windDirection = document.getElementById('windDirection').value || 'N/A'; // Default to 'N/A' if empty
+  
+  // --- Match Information Sheet ---
+  const mainInfoData = [
+    {
+      'Date': new Date().toLocaleDateString(),
+      'Venue': venue,
+      'Team A': teamA,
+      'Team B': teamB,
+      'Toss Won By': tossWonBy,
+      'Toss Decision': tossDecision,
+      'Umpire 1': umpire1,
+      'Umpire 2': umpire2,
+      'Scorer 1': scorer1,
+      'Scorer 2': scorer2,
+      'Wind Speed': windSpeed,
+      'Wind Direction': windDirection
+    }
+  ];
+    // --- Batting Sheet ---
+    const battingHeaders = ['Batsman', 'Runs', 'Fours', 'Sixes', 'Balls', 'Strike Rate'];
+    const battingData = battingOrder.map(player => {
+      const strikeRate = player.balls > 0 ? ((player.runs / player.balls) * 100).toFixed(2) : 0;
+      return {
+        Batsman: player.name,
+        Runs: player.runs,
+        Fours: player.fours,
+        Sixes: player.sixes,
+        Balls: player.balls,
+        'Strike Rate': strikeRate
+      };
+    });
+  
+    // --- Bowling Sheet ---
+    const bowlingData = Object.entries(bowlingStats).map(([bowler, stats]) => {
+      const overs = Math.floor(stats.balls / 6) + '.' + (stats.balls % 6);
+      const economy = (stats.balls > 0 ? (stats.runs / (stats.balls / 6)).toFixed(2) : '0.00');
+      return {
+        Bowler: bowler,
+        Overs: overs,
+        Runs: stats.runs,
+        Wickets: stats.wickets,
+        Extras: stats.extras,
+        Economy: economy
+      };
+    });
+    // -- Fielding Notes Sheet --
+    const fieldingNotesData = fieldingNotes.map(note => {
+      return{
+      Over: note.over,
+      Ball: note.ball,
+      Exceptional: note.exceptional || "",
+      Misfielding: note.misfielding || ""
+      };
+    });
+
+    //-- Fielder Alignment Sheet --
+    const fielderAlignmentData = fielderSnapshots.map(snapshot => {
+      const row = {
+        Over: snapshot.over,
+        Ball: snapshot.ball
+      };
+      snapshot.fielderAlignment.forEach(fielder => {
+        row[fielder.name] = fielder.zone;
+      });
+      return row;
+    });
+
+    //-- Ball Data--
+    const ballData = balls.map(ball => {
+      return {
+        Over: ball.cOver,
+        Ball: ball.ballNumber,
+        ShotType: ball.shotType,
+        Batsman: ball.batsman,
+        Bowler: ball.bowler,
+        Line: ball.line,
+        Length: ball.Length,
+        BowlerEnd: ball.end,
+        AroundTheWicket: ball.aroundTheWicket,
+        BallType: ball.ballType,
+        BallSpeed: ball.ballSpeed,
+        BallLanded: ball.wagonWheel,
+        Extras: ball.extraType,
+        NoBatContact: ball.nbat,
+        DeadBall: ball.deadBall,
+        Dismissal: ball.dismissalType,
+        Runs: ball.runsThisBall,
+        TotalRuns: ball.cumulativeRuns
+      };
+    });
+  
+    // Create workbook and worksheets
+    const wb = XLSX.utils.book_new();
+    
+    const wsBatting = XLSX.utils.json_to_sheet(battingData, { header: battingHeaders });
+    const wsBowling = XLSX.utils.json_to_sheet(bowlingData);
+    const wsFieldingNotes = XLSX.utils.json_to_sheet(fieldingNotesData);
+    const wsFielderAlignment = XLSX.utils.json_to_sheet(fielderAlignmentData);
+    const wsBallData = XLSX.utils.json_to_sheet(ballData);
+  
+    
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(mainInfoData), 'Match Information');
+    XLSX.utils.book_append_sheet(wb, wsBatting, 'Batting Stats');
+    XLSX.utils.book_append_sheet(wb, wsBowling, 'Bowling Stats');
+    XLSX.utils.book_append_sheet(wb, wsFieldingNotes, 'Fielding Notes');
+    XLSX.utils.book_append_sheet(wb, wsFielderAlignment, 'Fielder Alignment');
+    XLSX.utils.book_append_sheet(wb, wsBallData, 'Ball Data');
+
+  
+    // Download
+    XLSX.writeFile(wb, 'match_report.xlsx');
+  };
+
   
 
+ 
 
   const deletePrev = () => {
     if (balls.length === 0) return;
@@ -565,6 +707,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
   
    return (
     <div className="layout">
+
       <div className="side-section">
       <div className="batting-order">
         <div className="batting-table">
@@ -649,6 +792,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       className="input-field"
     />
   </div>
+  
 
   <div className="input-group">
     <label for="windDirection">Wind Direction (°)</label>
@@ -661,7 +805,126 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       className="input-field"
     />
   </div>
+  
 </div>
+<div className="wind-info">
+
+        <div className="input-group">
+          <label htmlFor="venue">Venue:</label>
+          <input
+            type="text"
+            id="venue"
+            placeholder="Enter Venue"
+            className="input-field"
+          />
+        </div>
+</div>
+<div className="wind-info">
+
+        <div className="input-group">
+          <label htmlFor="teamA">Team A:</label>
+          <input
+            type="text"
+            id="teamA"
+            placeholder="Enter Team A"
+            className="input-field"
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="teamB">Team B:</label>
+          <input
+            type="text"
+            id="teamB"
+            placeholder="Enter Team B"
+            className="input-field"
+          />
+        </div>
+      </div>
+  <div className="wind-info">
+  <div className="input-group">
+          <label>Toss Won By:</label>
+          <div className="button-group">
+            {tossWonByOptions.map((option) => (
+              <button
+                key={option}
+                className={`toggle-button ${currentTossWonBy === option ? 'active' : ''}`}
+                onClick={() => handleTossWonByChange(option)}
+                type="button"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Toss Decision */}
+        <div className="input-group">
+          <label>Toss Decision:</label>
+          <div className="button-group">
+            {tossDecisionOptions.map((option) => (
+              <button
+                key={option}
+                className={`toggle-button ${currentTossDecision === option ? 'active' : ''}`}
+                onClick={() => handleTossDecisionChange(option)}
+                type="button"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+ 
+  </div>
+
+    <div className="wind-info"> 
+
+        <div className="input-group">
+          <label htmlFor="umpire1">Umpire 1:</label>
+          <input
+            type="text"
+            id="umpire1"
+            placeholder="Enter Umpire 1"
+            className="input-field"
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="umpire2">Umpire 2:</label>
+          <input
+            type="text"
+            id="umpire2"
+            placeholder="Enter Umpire 2"
+            className="input-field"
+          />
+        </div>
+        </div>
+        <div className="wind-info"> 
+
+        <div className="input-group">
+          <label htmlFor="scorer1">Scorer 1:</label>
+          <input
+            type="text"
+            id="scorer1"
+            placeholder="Enter Scorer 1"
+            className="input-field"
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="scorer2">Scorer 2:</label>
+          <input
+            type="text"
+            id="scorer2"
+            placeholder="Enter Scorer 2"
+            className="input-field"
+          />
+        </div>
+      </div>
+
+<button className="download-button" onClick={downloadFullReport}>
+  Download Full Report
+</button>
 
       <div className="scorer-card">
         <h1 className="heading">Cricket Scorer</h1>
