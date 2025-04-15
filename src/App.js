@@ -1191,7 +1191,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         </button> 
 
         <button onClick={downloadCSV} className="download-button">
-          Download CSV
+          Download Ball by Ball Data
         </button>
         <div className="scorer-table-container">
         {balls.length > 0 && (
