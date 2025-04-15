@@ -290,6 +290,63 @@ export default function CricketScorer(){
     link.click();
   };
 
+
+  const downloadBattingStats = () => {
+    const headers = ['Batsman', 'Runs', 'Fours', 'Sixes', 'Balls', 'Strike Rate'];
+    const rows = battingOrder.map(player => {
+      const strikeRate = player.balls > 0 ? ((player.runs / player.balls) * 100).toFixed(2) : 0;
+      return [
+        player.name,
+        player.runs,
+        player.fours,
+        player.sixes,
+        player.balls,
+        strikeRate
+      ];
+    });
+  
+    // Convert rows to CSV
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+  
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+    // Create a download link and trigger it
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'batting_stats.csv';
+    link.click();
+  };
+  
+  // Function to download bowling stats as CSV
+  const downloadBowlingStats = () => {
+    const headers = ['Bowler', 'Overs', 'Runs', 'Wickets', 'Extras', 'Economy'];
+    const rows = Object.entries(bowlingStats).map(([bowler, stats]) => {
+      const overs = Math.floor(stats.balls / 6) + '.' + (stats.balls % 6);
+      const economy = (stats.runs / (stats.balls / 6)).toFixed(2);
+      return [
+        bowler,
+        overs,
+        stats.runs,
+        stats.wickets,
+        stats.extras,
+        economy
+      ];
+    });
+  
+    // Convert rows to CSV
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+  
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+    // Create a download link and trigger it
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'bowling_stats.csv';
+    link.click();
+  };
+
   
 
 
@@ -513,7 +570,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         <div className="batting-table">
           <h2 className="heading">Batting Stats</h2>
           <div className = "scrollable-table-container">
-          <table  id="battingStatsTable" class="battable">
+          <table  id="battingStatsTable" className="battable">
             <thead className="batthead">
               <tr>
                 <th className="batthead">Batsman</th>
@@ -542,15 +599,15 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             </tbody>
           </table>
           </div>
-          {/* <button class="download-button" onclick={downloadBattingStats}>
+          <button className="download-button" onClick={downloadBattingStats}>
           Download Batting Stats
-          </button> */}
+          </button>
         </div>
       </div>
       <div className="Bowling">
         <h2 className="heading">Bowling Stats</h2>
         <div className = "scrollable-table-container">
-          <table  id="bowlingStatsTable" class="Bowling" >
+          <table  id="bowlingStatsTable" className="Bowling" >
           <thead>
             <tr>
               <th>Bowler</th>
@@ -576,24 +633,24 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           </tbody>
         </table>
         </div>
-        {/* <button class="download-button" onclick={downloadBowlingStats}>
+        <button className="download-button" onClick={downloadBowlingStats}>
           Download Bowling Stats
-        </button> */}
+        </button>
       </div>
       </div>
       <div className="scorer-container">
-      <div class="wind-info">
-  <div class="input-group">
+      <div className="wind-info">
+  <div className="input-group">
     <label for="windSpeed">Wind Speed</label>
     <input
       id="windSpeed"
       type="text"
       placeholder="e.g. 10 km/h"
-      class="input-field"
+      className="input-field"
     />
   </div>
 
-  <div class="input-group">
+  <div className="input-group">
     <label for="windDirection">Wind Direction (°)</label>
     <input
       id="windDirection"
@@ -601,7 +658,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       min="0"
       max="360"
       placeholder="0–360"
-      class="input-field"
+      className="input-field"
     />
   </div>
 </div>
@@ -741,22 +798,6 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
               ))}
             </div>
           </div>
-
-          {/* <div className="col-span-2">
-            <label className="block text-sm font-medium">Shot Type<br /></label>
-            <div className="button-group">
-              {shots.map((shot) => (
-                <button
-                  key={shot}
-                  className={`toggle-button ${currentBall.shotType === shot ? 'active' : ''}`}
-                  onClick={() => handleChange("shotType", shot)}
-                  type="button"
-                >
-                  {shot}
-                </button>
-              ))}
-            </div>
-          </div> */}
 
           
           <div>
