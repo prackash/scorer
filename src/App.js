@@ -288,7 +288,6 @@ export default function CricketScorer(){
   
   
 
-  // NEED TO HANDLE LOGIC FOR BATTING STATS AND BOWLING STATS REMOVAL AND REVERTING END OF OVER
   const deletePrev = () => {
     if (balls.length === 0) return;
   
@@ -317,7 +316,6 @@ setBowlingStats(prevStats => {
   };
 });
 
-// 3. Revert batting stats
 // 3. Revert batting stats
 setBattingOrder(prevOrder => {
   const batter = latestBall.batsman;
@@ -509,16 +507,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       <div className="batting-order">
         <div className="batting-table">
           <h2 className="heading">Batting Stats</h2>
-          {/* <div className="input-group">
-            <input
-              type="text"
-              value={newBatsman}
-              onChange={(e) => setNewBatsman(e.target.value)}
-              placeholder="Add Batsman"
-              className="input-field"
-            />
-            <button onClick={addBatsman} className="add-button">Add</button>
-          </div> */}
+          <div className = "scrollable-table-container">
           <table className="battable">
             <thead className="batthead">
               <tr>
@@ -547,11 +536,13 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
       <div className="Bowling">
         <h2 className="heading">Bowling Stats</h2>
-        <table>
+        <div className = "scrollable-table-container">
+          <table>
           <thead>
             <tr>
               <th>Bowler</th>
@@ -576,6 +567,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             }
           </tbody>
         </table>
+        </div>
       </div>
       </div>
       <div className="scorer-container">
@@ -947,6 +939,8 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           </select>
           <button onClick={updateFielder} className="add-button">Set</button>
         </div>
+        <div className = "scrollable-table-container">
+          
         <table className="fielder-table">
           <thead>
             <tr>
@@ -977,6 +971,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             ))}
           </tbody>
         </table>
+        </div>
         <button
           onClick={downloadFielderSnapshotCSV}
           className="download-button"
