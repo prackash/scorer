@@ -271,3 +271,28 @@
     font-weight: 600;
   }
   
+  .fielder-misc-section {
+    margin-top: 1.5rem;
+    background-color: #fef9c3; /* light yellow */
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+    
+  }
+  
+  .fielder-misc-section .input-group {
+    margin-bottom: 0.75rem;
+  }
+  .right-align {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .fielder-misc-section .right-align label,
+  .fielder-misc-section .right-align select {
+    text-align: right;
+    width: 100%;
+  }
+  

@@ -23,6 +23,7 @@ export default function CricketScorer(){
     end:"",
   });
   const runOptions = [0,1,2,3,4,5,6];
+  
   const extraOptions = ["","Wide","No Ball","Free Hit"];
   const noBat=["","Bye","Leg Bye"];
   const dismissalOptions = ["","Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
@@ -33,7 +34,11 @@ export default function CricketScorer(){
   // const deadBallOptions = ["No","Yes"];
 
 
+  const [exceptionalFielding, setExceptionalFielding] = useState("");
+  const [misfielding, setMisfielding] = useState("");
+  const [fieldingNotes, setFieldingNotes] = useState([]);
 
+  
   const [balls,setBalls]=useState([]);
   const [totalRuns, setTotalRuns] = useState(0);
   const [over,setOver]=useState(0);
@@ -249,6 +254,30 @@ export default function CricketScorer(){
     link.setAttribute("download", "fielder_alignment.csv");
     link.click();
   }
+  const downloadFieldingNotesCSV = () => {
+    if (fieldingNotes.length === 0) return;
+  
+    const headers = ["Over", "Ball", "Exceptional", "Misfielding"];
+    const rows = fieldingNotes.map(note => [
+      `${note.over}`,
+      `${note.ball}`,
+      `"${note.exceptional || ""}"`,
+      `"${note.misfielding || ""}"`
+    ]);
+  
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+  
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "fielding_notes.csv");
+    link.click();
+  };
+  
   
 
   // NEED TO HANDLE LOGIC FOR BATTING STATS AND BOWLING STATS REMOVAL AND REVERTING END OF OVER
@@ -450,6 +479,20 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       }  
     ]
     );
+    if (exceptionalFielding || misfielding) {
+      setFieldingNotes(prev => [
+        ...prev,
+        {
+          over: over,
+          ball: ballCount + 1,
+          exceptional: exceptionalFielding,
+          misfielding: misfielding
+        }
+      ]);
+      setExceptionalFielding("");
+      setMisfielding("");
+    }
+    
   };
   
    return (
@@ -925,9 +968,49 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         </button>
 
       </div>
-      <div>
-        <p>Misfielding and expectional fielding section</p>
-      </div>
+      <div className="fielder-misc-section right-align">
+  <h2 className="heading">Exceptional and Misfielding</h2>
+
+  <div className="input-group">
+    <label className="block text-sm font-medium">Exceptional Fielding: </label>
+    <select
+      value={exceptionalFielding}
+      onChange={(e) => setExceptionalFielding(e.target.value)}
+      className="w-full border rounded p-2 mt-1"
+    >
+      <option value="">Select Player</option>
+      {fielderAlignment.map(f => (
+        <option key={f.name} value={f.name}>{f.name}</option>
+      ))}
+    </select>
+  </div>
+
+  <div className="input-group mt-4">
+    <label className="block text-sm font-medium">Misfielding: </label>
+    <select
+      value={misfielding}
+      onChange={(e) => setMisfielding(e.target.value)}
+      className="w-full border rounded p-2 mt-1"
+    >
+      <option value="">Select Player</option>
+      {fielderAlignment.map(f => (
+        <option key={f.name} value={f.name}>{f.name}</option>
+      ))}
+    </select>
+  </div>
+</div>
+
+{fieldingNotes.length > 0 && (
+  <div className="mt-4">
+    <button
+      onClick={downloadFieldingNotesCSV}
+      className="download-button"
+    >
+      Download Fielding Notes CSV
+    </button>
+  </div>
+)}
+
       </div>
     </div>
   );
