@@ -782,7 +782,19 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       </div>
       </div>
       <div className="scorer-container">
-      <div className="wind-info">
+      
+<div className="wind-info">
+
+        <div className="input-group">
+          <label htmlFor="venue">Venue:</label>
+          <input
+            type="text"
+            id="venue"
+            placeholder="Enter Venue"
+            className="input-field"
+          />
+        </div>
+
   <div className="input-group">
     <label for="windSpeed">Wind Speed</label>
     <input
@@ -806,18 +818,6 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
     />
   </div>
   
-</div>
-<div className="wind-info">
-
-        <div className="input-group">
-          <label htmlFor="venue">Venue:</label>
-          <input
-            type="text"
-            id="venue"
-            placeholder="Enter Venue"
-            className="input-field"
-          />
-        </div>
 </div>
 <div className="wind-info">
 
@@ -898,8 +898,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             className="input-field"
           />
         </div>
-        </div>
-        <div className="wind-info"> 
+        
 
         <div className="input-group">
           <label htmlFor="scorer1">Scorer 1:</label>
