@@ -920,7 +920,8 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           />
         </div>
       </div>
-
+{/* Set button once active it should make all the wind info div invisible */}
+{/* Innings 1 and Innings 2 toggle */}
 <button className="download-button" onClick={downloadFullReport}>
   Download Full Report
 </button>
