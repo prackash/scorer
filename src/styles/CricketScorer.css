@@ -159,7 +159,18 @@
   gap: 1rem;
   flex: 1;
 }
+.input-grid-below {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Two equal-width columns */
+  gap: 1rem; /* Space between rows and columns */
+  margin-top: 1rem;
+}
 
+@media (max-width: 768px) {
+  .input-grid-below {
+    grid-template-columns: 1fr; /* Stack items in one column */
+  }
+}
 @media (min-width: 768px) {
   .input-grid {
     grid-template-columns: 1fr;
@@ -167,6 +178,12 @@
 
   .input-grid .col-span-2 {
     grid-column: span 1;
+  }
+  .input-span-2 {
+    grid-column: span 3;
+  }
+  .input-span-1{
+    grid-column: span 2;
   }
 }
 

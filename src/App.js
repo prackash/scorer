@@ -1,16 +1,17 @@
 
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import wagonwheel from "./assets/wagonwheel.jpg"
 import "./styles/CricketScorer.css"
 import * as XLSX from "xlsx";
+import imageMapResize from "image-map-resizer";
 export default function CricketScorer(){
   const [currentBall, setCurrentBall] = useState({
     runs: 0,
-    extraType: "",
-    nbat:"",
+    extraType: "None",
+    nbat:"Valid Contact", 
     wagonWheel: "",
-    dismissalType: "",
-    shotType: "",
+    dismissalType: "None",
+    shotType: "No Shot",
     batsman: "",
     bowler: "",
     line: "",
@@ -25,13 +26,30 @@ export default function CricketScorer(){
   const runOptions = [0,1,2,3,4,5,6];
   const [currentTossWonBy, setCurrentTossWonBy] = useState('');
   const [currentTossDecision, setCurrentTossDecision] = useState('');
+  const [refresh,setRefresh]=useState(false);
+  const [showMatchInfo, setShowMatchInfo] = useState(true);
 
-  const tossWonByOptions = ['Team A', 'Team B'];
+
+  const toggleMatchInfo=() => {
+    setShowMatchInfo(!showMatchInfo);
+  };
+
+  const getTeamNames=()=>{
+    const teamA = document.getElementById('teamA')?.value||"Team A";
+    const teamB = document.getElementById('teamB')?.value||"Team B";
+    return [teamA, teamB];
+  };
+  useEffect(() => {
+    imageMapResize();
+  },[]);
+
+  const [teamA, teamB] = getTeamNames();
+
   const tossDecisionOptions = ['Bat', 'Bowl'];
 
-  const extraOptions = ["","Wide","No Ball","Free Hit"];
-  const noBat=["","Bye","Leg Bye"];
-  const dismissalOptions = ["","Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
+  const extraOptions = ["None","Wide","No Ball","Free Hit"];
+  const noBat=["Valid Contact","Bye","Leg Bye"];
+  const dismissalOptions = ["None","Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
   const bowlerEndOptions = ["Pavillion","Far End"];
   const lineOptions = ["LegSide","Middle","OffSide","Outside-OffSide","Wide-OffSide"];
   const lengthOptions = ["Full-Toss","Yorker","Full-Length","Back-of-Length","Bouncer"];
@@ -82,6 +100,9 @@ export default function CricketScorer(){
     "OffBreak","OffCutter","OutSwinger","ReverseSwing","Slider","SlowerBall",
     "Teesra","TopSpinner","Yorker"]
   
+    const aroundTheWicketOptions = ["No","Yes"];
+    const deadBallOptions = ["No","Yes"];
+  
     
   const handleChange=(field,value)=>{
     setCurrentBall(prev => ({
@@ -108,8 +129,27 @@ export default function CricketScorer(){
     });
   }
   };
+  
+  const handleTossWonByChange = (team) => {
+    setCurrentTossWonBy(team);
+  };
+
+  // Handle Toss Decision Button Click
+  const handleTossDecisionChange = (decision) => {
+    setCurrentTossDecision(decision);
+  };
+
+  const handleInputChange = () => {
+    setRefresh(prev => !prev);};
 
 
+  const handleWagonWheelClick = (zone) => {
+    zone.preventDefault();
+    const selectedZone = zone.target.getAttribute("data-value")?.trim();
+    if(selectedZone){
+      handleChange("wagonWheel", selectedZone);
+    }
+  };
     
   const switchStrikers=()=>{
     if(currentBall.switchStrikers===1){
@@ -354,14 +394,6 @@ export default function CricketScorer(){
     link.click();
   };
 
-  const handleTossWonByChange = (team) => {
-    setCurrentTossWonBy(team);
-  };
-
-  // Handle Toss Decision Button Click
-  const handleTossDecisionChange = (decision) => {
-    setCurrentTossDecision(decision);
-  };
 
   const downloadFullReport = () => {
     const venue = document.getElementById('venue').value;
@@ -782,7 +814,9 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       </div>
       </div>
       <div className="scorer-container">
-      
+
+
+<div className = "match-info"  style={{ display: showMatchInfo ? 'block' : 'none' }}>      
 <div className="wind-info">
 
         <div className="input-group">
@@ -827,6 +861,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             type="text"
             id="teamA"
             placeholder="Enter Team A"
+            onChange={handleInputChange}
             className="input-field"
           />
         </div>
@@ -837,6 +872,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             type="text"
             id="teamB"
             placeholder="Enter Team B"
+            onChange={handleInputChange}
             className="input-field"
           />
         </div>
@@ -845,14 +881,14 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
   <div className="input-group">
           <label>Toss Won By:</label>
           <div className="button-group">
-            {tossWonByOptions.map((option) => (
+            {[teamA,teamB].map((team) => (
               <button
-                key={option}
-                className={`toggle-button ${currentTossWonBy === option ? 'active' : ''}`}
-                onClick={() => handleTossWonByChange(option)}
+                key={team}
+                className={`toggle-button ${currentTossWonBy === team ? 'active' : ''}`}
+                onClick={() => handleTossWonByChange(team)}
                 type="button"
               >
-                {option}
+                {team}
               </button>
             ))}
           </div>
@@ -920,8 +956,15 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           />
         </div>
       </div>
+      </div>
 {/* Set button once active it should make all the wind info div invisible */}
 {/* Innings 1 and Innings 2 toggle */}
+      <div>
+        <button className="toggle-button" onClick={toggleMatchInfo}>
+          {showMatchInfo ? "Hide Match Info" : "Show Match Info"}
+          </button>
+      </div>
+
 <button className="download-button" onClick={downloadFullReport}>
   Download Full Report
 </button>
@@ -930,7 +973,215 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
         <div className="input-grid">
+        <div>
+            <label className="block text-sm font-medium">Bowler End<br /></label>
+            <div className="button-group">
+              {bowlerEndOptions.map((be) => (
+                <button
+                  key={be}
+                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
+                  onClick={() => handleChange("end", be)}
+                  type="button"
+                >
+                  {be}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Around the Wicket<br /></label>
+            <div className="button-group">
+              {aroundTheWicketOptions.map((atw) => (
+                <button
+                  key={atw}
+                  className={`toggle-button ${currentBall.aroundTheWicket === atw ? 'active' : ''}`}
+                  onClick={() => handleChange("aroundTheWicket", atw)}
+                  type="button"
+                >
+                  {atw}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          
+        <div className="col-span-2">
+            <label className="block text-sm font-medium">Line<br /></label>
+            <div className="button-group">
+              {lineOptions.map((line) => (
+                <button
+                  key={line}
+                  className={`toggle-button ${currentBall.line === line ? 'active' : ''}`}
+                  onClick={() => handleChange("line", line)}
+                  type="button"
+                >
+                  {line}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="col-span-2">
+            <label className="block text-sm font-medium">Length<br /></label>
+            <div className="button-group">
+              {lengthOptions.map((length) => (
+                <button
+                  key={length}
+                  className={`toggle-button ${currentBall.Length === length ? 'active' : ''}`}
+                  onClick={() => handleChange("Length", length)}
+                  type="button"
+                >
+                  {length}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-sm font-medium">Ball Type <br /></label>
+            <div className="button-group">
+              {ballTypes.map((ba) => (
+                <button
+                  key={ba}
+                  className={`toggle-button ${currentBall.ballType === ba ? 'active' : ''}`}
+                  onClick={() => handleChange("ballType", ba)}
+                  type="button"
+                >
+                  {ba}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          
+          
+          <div>
+            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
+            <input
+              type="text"
+              value={currentBall.ballSpeed}
+              onChange={(e) => handleChange("ballSpeed", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+          
+            <div>
+            <label className="block text-sm font-medium">Dead Ball<br /></label>
+            <div className="button-group">
+              {deadBallOptions.map((db) => (
+                <button
+                  key={db}
+                  className={`toggle-button ${currentBall.deadBall === db ? 'active' : ''}`}
+                  onClick={() => handleChange("deadBall", db)}
+                  type="button"
+                >
+                  {db}
+                </button>
+              ))}
+            </div>
+          </div>
+
+
+        </div>
+        <div className="image-wrapper">
+          <img
+            src={wagonwheel}
+            alt="Wagon Wheel"
+            useMap="#image-map-wagon"
+            className="max-w-full h-auto rounded-lg shadow"
+          ></img>
+          <map name="image-map-wagon">
+          <area target="" alt="LongStop" title="LongStop" href="#" data-value="LongStop " id="wagon-LongStop " coords="203,10,223,26" shape="rect" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="FIneThirdMan" title="FIneThirdMan" href="#" data-value="FIneThirdMan " id="wagon-FIneThirdMan  " coords="139,27,160,45" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepThirdMan" title="DeepThirdMan" href="#" data-value="DeepThirdMan " id="wagon-DeepThirdMan " coords="98,44,113,59" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="SquareThirdMan" title="SquareThirdMan" href="#" data-value="SquareThirdMan " id="wagon-SquareThirdMan " coords="72,87,89,114" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepBackwardPoint" title="DeepBackwardPoint" href="#" data-value="DeepBackwardPoint " id="wagon-DeepBackwardPoint " coords="25,138,36,160" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepPoint" title="DeepPoint" href="#" data-value="DeepPoint " id="wagon-DeepPoint " coords="13,189,25,203" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepCoverPoint" title="DeepCoverPoint" href="#" data-value="DeepCoverPoint " id="wagon-DeepCoverPoint " coords="10,237,23,252" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepCover" title="DeepCover" href="#" data-value="DeepCover " id="wagon-DeepCover " coords="19,299,37,315" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepExtraCover" title="DeepExtraCover" href="#" data-value="DeepExtraCover " id="wagon-DeepExtraCover " coords="40,349,63,371" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="WideLongOff" title="WideLongOff" href="#" data-value="WideLongOff " id="wagon-WideLongOff " coords="87,397,107,417" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="LongOff" title="LongOff" href="#" data-value="LongOff " id="wagon-LongOff " coords="127,418,145,441" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="StraightLongOff" title="StraightLongOff" href="#" data-value="StraightLongOff " id="wagon-StraightLongOff " coords="159,430,182,454" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="StraightHit" title="StraightHit" href="#" data-value="StraightHit " id="wagon-StraightHit " coords="204,439,223,458" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="StraightLongOn" title="StraightLongOn" href="#" data-value="StraightLongOn " id="wagon-StraightLongOn " coords="247,434,265,453" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="LongOn" title="LongOn" href="#" data-value="LongOn " id="wagon-LongOn " coords="282,418,307,440" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="WideLongOn" title="WideLongOn" href="#" data-value="WideLongOn " id="wagon-WideLongOn " coords="319,399,338,416" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepForwardMidwicket" title="DeepForwardMidwicket" href="#" data-value="DeepForwardMidwicket " id="wagon-DeepForwardMidwicket " coords="361,352,381,367" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="CowCorner" title="CowCorner" href="#" data-value="CowCorner " id="wagon-CowCorner " coords="377,322,394,340" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepMidwicket" title="DeepMidwicket" href="#" data-value="DeepMidwicket " id="wagon-DeepMidwicket " coords="391,290,405,307" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepForwardSquareLeg" title="DeepForwardSquareLeg" href="#" data-value="DeepForwardSquareLeg " id="wagon-DeepForwardSquareLeg " coords="397,233,418,254" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepSquareLeg" title="DeepSquareLeg" href="#" data-value="DeepSquareLeg " id="wagon-DeepSquareLeg " coords="394,189,417,214" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepBackwardSquareLeg" title="DeepBackwardSquareLeg" href="#" data-value="DeepBackwardSquareLeg " id="wagon-DeepBackwardSquareLeg " coords="383,146,408,166" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="SquareFineLeg" title="SquareFineLeg" href="#" data-value="SquareFineLeg " id="wagon-SquareFineLeg " coords="354,109,373,123" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepFineLeg" title="DeepFineLeg" href="#" data-value="DeepFineLeg " id="wagon-DeepFineLeg " coords="318,48,336,71" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="LongLeg" title="LongLeg" href="#" data-value="LongLeg " id="wagon-LongLeg " coords="280,24,293,41" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="FineLeg" title="FineLeg" href="#" data-value="FineLeg " id="wagon-FineLeg " coords="305,71,317,91" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="StraightFineLeg" title="StraightFineLeg" href="#" data-value="StraightFineLeg " id="wagon-StraightFineLeg " coords="248,48,261,67" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ThirdMan" title="ThirdMan" href="#" data-value="ThirdMan " id="wagon-ThirdMan " coords="121,63,136,77" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortThirdMan" title="ShortThirdMan" href="#" data-value="ShortThirdMan " id="wagon-ShortThirdMan " coords="128,94,142,114" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="BackwardPoint" title="BackwardPoint" href="#" data-value="BackwardPoint " id="wagon-BackwardPoint " coords="105,171,117,188" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="Point" title="Point" href="#" data-value="Point " id="wagon-Point " coords="105,192,117,205" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ForwardPoint" title="ForwardPoint" href="#" data-value="ForwardPoint " id="wagon-ForwardPoint " coords="105,217,115,227" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="CoverPoint" title="CoverPoint" href="#" data-value="CoverPoint " id="wagon-CoverPoint " coords="104,236,117,247" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="Cover" title="Cover" href="#" data-value="Cover " id="wagon-Cover " coords="105,261,116,272" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ExtraCover" title="ExtraCover" href="#" data-value="ExtraCover " id="wagon-ExtraCover " coords="111,302,123,315" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepMidOff" title="DeepMidOff" href="#" data-value="DeepMidOff " id="wagon-DeepMidOff " coords="158,349,172,361" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="DeepMidOn" title="DeepMidOn" href="#" data-value="DeepMidOn " id="wagon-DeepMidOn " coords="252,350,267,363" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="MidWicket" title="MidWicket" href="#" data-value="MidWicket " id="wagon-MidWicket " coords="308,261,320,275" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ForwardSquareLeg" title="ForwardSquareLeg" href="#" data-value="ForwardSquareLeg " id="wagon-ForwardSquareLeg " coords="306,217,319,232" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="SquareLeg" title="SquareLeg" href="#" data-value="SquareLeg " id="wagon-SquareLeg " coords="308,192,320,206" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="BackwardSquareLeg" title="BackwardSquareLeg" href="#" data-value="BackwardSquareLeg " id="wagon-BackwardSquareLeg " coords="307,174,320,188" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortFineLeg" title="ShortFineLeg" href="#" data-value="ShortFineLeg " id="wagon-ShortFineLeg " coords="282,104,297,118" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="MidOff" title="MidOff" href="#" data-value="MidOff " id="wagon-MidOff " coords="163,307,177,323" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="MidOn" title="MidOn" href="#" data-value="MidOn " id="wagon-MidOn " coords="242,309,259,322" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="Bowler" title="Bowler" href="#" data-value="Bowler " id="wagon-Bowler " coords="197,277,213,293" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="WK" title="WK" href="#" data-value="WK " id="wagon-WK " coords="206,166,217,178" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="1st" title="1st" href="#" data-value="1st " id="wagon-1st " coords="195,156,205,166" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="2nd" title="2nd" href="#" data-value="2nd " id="wagon-2nd " coords="189,166,5" shape="circle" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="3rd" title="3rd" href="#" data-value="3rd " id="wagon-3rd " coords="180,171,5" shape="circle" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="4th" title="4th" href="#" data-value="4th " id="wagon-4th " coords="172,177,4" shape="circle" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="5th" title="5th" href="#" data-value="5th " id="wagon-5th " coords="163,183,5" shape="circle" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="Gully" title="Gully" href="#" data-value="Gully " id="wagon-Gully " coords="137,177,150,190" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="FlySlip" title="FlySlip" href="#" data-value="FlySlip " id="wagon-FlySlip " coords="164,137,174,151" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="BackwardShortLeg" title="BackwardShortLeg" href="#" data-value="BackwardShortLeg " id="wagon-BackwardShortLeg " coords="270,136,281,149" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="LegGully" title="LegGully" href="#" data-value="LegGully " id="wagon-LegGully " coords="270,168,283,181" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="LegSlip" title="LegSlip" href="#" data-value="LegSlip " id="wagon-LegSlip " coords="232,172,244,186" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortLeg" title="ShortLeg" href="#" data-value="ShortLeg " id="wagon-ShortLeg " coords="228,193,241,204" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="SillyPoint" title="SillyPoint" href="#" data-value="SillyPoint " id="wagon-SillyPoint " coords="183,192,194,204" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="SillyMidOff" title="SillyMidOff" href="#" data-value="SillyMidOff " id="wagon-SillyMidOff " coords="185,215,196,227" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortCover" title="ShortCover" href="#" data-value="ShortCover " id="wagon-ShortCover " coords="148,233,160,245" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortMidOff" title="ShortMidOff" href="#" data-value="ShortMidOff " id="wagon-ShortMidOff " coords="170,251,181,262" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortMidWicket" title="ShortMidWicket" href="#" data-value="ShortMidWicket " id="wagon-ShortMidWicket " coords="262,233,274,244" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="SillyMidOn" title="SillyMidOn" href="#" data-value="SillyMidOn " id="wagon-SillyMidOn " coords="227,215,238,227" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          <area target="" alt="ShortMidOn" title="ShortMidOn" href="#" data-value="ShortMidOn " id="wagon-ShortMidOn " coords="242,250,252,261" shape="0" onClick={(zone)=>handleWagonWheelClick(zone)}></area>
+          </map>
+          
+        </div>
+        </div>
+            
+        <div className="input-grid-below">
+
+        <div className="input-span-2">
+            <label className="block text-sm font-medium">Shot Type<br /></label>
+            <div className="button-group">
+              {shots.map((shot) => (
+                <button
+                  key={shot}
+                  className={`toggle-button ${currentBall.shotType === shot ? 'active' : ''}`}
+                  onClick={() => handleChange("shotType", shot)}
+                  type="button"
+                >
+                  {shot}
+                </button>
+              ))}
+            </div>
+          </div>
+        
+            
+          
+
+          <div>
+          {/* <div> */}
             <label className="block text-sm font-medium">Runs<br /></label>
             <div className="button-group">
               {runOptions.map((run) => (
@@ -976,24 +1227,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             </div>
           </div>
           
-
-          <div className="col-span-2">
-            <label className="block text-sm font-medium">Wagon Wheel Zone<br/></label>
-            <select
-              value={currentBall.wagonWheel}
-              onChange={(e) => handleChange("wagonWheel", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            >
-              <option value="">Select Zone</option>
-              {wagonWheelZones.map((zone) => (
-                <option key={zone} value={zone}>
-                  {zone}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="col-span-2">
+          <div className="input-span-2">
             <label className="block text-sm font-medium">Dismissal Type<br /></label>
             <div className="button-group">
               {dismissalOptions.map((dis) => (
@@ -1019,7 +1253,6 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             />
           </div>
           
-
           <div>
             <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
             <input
@@ -1029,157 +1262,13 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
               className="w-full border rounded p-2 mt-1"
             />
           </div>
-
-          
-          <div className="col-span-2">
-            <label className="block text-sm font-medium">Line<br /></label>
-            <div className="button-group">
-              {lineOptions.map((line) => (
-                <button
-                  key={line}
-                  className={`toggle-button ${currentBall.line === line ? 'active' : ''}`}
-                  onClick={() => handleChange("line", line)}
-                  type="button"
-                >
-                  {line}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm font-medium">Length<br /></label>
-            <div className="button-group">
-              {lengthOptions.map((length) => (
-                <button
-                  key={length}
-                  className={`toggle-button ${currentBall.Length === length ? 'active' : ''}`}
-                  onClick={() => handleChange("Length", length)}
-                  type="button"
-                >
-                  {length}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          
-          <div>
-            <label className="block text-sm font-medium">Shot Type<br/></label>
-            <select
-              value={currentBall.shotType}
-              onChange={(e) => handleChange("shotType", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-              >
-              <option value="">Select Shot</option>
-              {shots.map((shot) => (
-                <option key={shot} value={shot}>
-                  {shot}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* <div className="col-span-2">
-            <label className="block text-sm font-medium">Ball Type<br /></label>
-            <div className="button-group">
-              {ballTypes.map((balt) => (
-                <button
-                  key={balt}
-                  className={`toggle-button ${currentBall.ballType === balt ? 'active' : ''}`}
-                  onClick={() => handleChange("ballType", balt)}
-                  type="button"
-                >
-                  {balt}
-                </button>
-              ))}
-            </div>
-          </div> */}
-
-          <div>
-            <label className="block text-sm font-medium">Ball Type<br/></label>
-            <select
-              value={currentBall.ballType}
-              onChange={(e) => handleChange("ballType", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-              >
-              <option value="">Select Shot</option>
-              {ballTypes.map((balt) => (
-                <option key={balt} value={balt}>
-                  {balt}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-
-          <div>
-            <label className="block text-sm font-medium">Bowler End<br /></label>
-            <div className="button-group">
-              {bowlerEndOptions.map((be) => (
-                <button
-                  key={be}
-                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
-                  onClick={() => handleChange("end", be)}
-                  type="button"
-                >
-                  {be}
-                </button>
-              ))}
-            </div>
-          </div>
-
-
-          
-
-            
-
-          <div>
-            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
-            <input
-              type="text"
-              value={currentBall.ballSpeed}
-              onChange={(e) => handleChange("ballSpeed", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
-          
-
-            <div>
-                <label className="block text-sm font-medium">Around the Wicket<br/></label>
-                <select
-                  value={currentBall.aroundTheWicket}
-                  onChange={(e) => handleChange("aroundTheWicket", e.target.value)}
-                  className="w-full border rounded p-2 mt-1"
-                >
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Dead Ball<br/></label>
-              <select
-                value={currentBall.deadBall}
-                onChange={(e) => handleChange("deadBall", e.target.value)}
-                className="w-full border rounded p-2 mt-1"
-              >
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-                
-              </select>
-            </div>
-
-
+          <div className="text-center mt-2">
+            <p className="text-sm font-medium">
+            Selected Wagon Wheel Position: <strong>{currentBall.wagonWheel || 'None'}</strong>
+            </p>
+          </div>  
         </div>
-        <div className="image-wrapper">
-          <img
-            src={wagonwheel}
-            alt="Wagon Wheel"
-            className="max-w-full h-auto rounded-lg shadow"
-          ></img>
-        </div>
-        </div>
-        
+      
 
         <button
           onClick={nextBall}
