@@ -599,6 +599,10 @@ setBattingOrder(prevOrder => {
   };
 
   const nextBall=()=>{
+    if (!striker.trim() || !nonStriker.trim()) {
+      alert("Please enter both Batsman On-Strike and Non-Strike.");
+      return;
+    }
     let extraRuns=0;
     if(currentBall.extraType==="Wide" || currentBall.extraType==="No Ball"){
       extraRuns=1;
@@ -1244,27 +1248,29 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Batsman-OnStike<br/></label>
+            <label className="block text-sm font-medium">Batsman-OnStike *<br/></label>
             <input
               type="text"
               value={striker}
               onChange={(e) => handleChange("batsman", e.target.value)}
               className="w-full border rounded p-2 mt-1"
+              required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium">Batsman-NonStike<br/></label>
+            <label className="block text-sm font-medium">Batsman-NonStike *<br/></label>
             <input
               type="text"
               value={nonStriker}
               onChange={(e) => setNonStriker(e.target.value)}
               className="w-full border rounded p-2 mt-1"
+              required
             />
           </div>
           <div className="text-center mt-2">
             <p className="text-sm font-medium">
-            Selected Wagon Wheel Position: <strong>{currentBall.wagonWheel || 'None'}</strong>
+            Wagon Wheel: <strong>{currentBall.wagonWheel || 'None'}</strong>
             </p>
           </div>  
         </div>
