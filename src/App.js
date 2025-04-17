@@ -13,6 +13,7 @@ export default function CricketScorer(){
     dismissalType: "None",
     shotType: "No Shot",
     batsman: "",
+    nonStriker: "",
     bowler: "",
     line: "",
     Length: "",
@@ -159,6 +160,7 @@ export default function CricketScorer(){
         return nonStriker;
       });
       handleChange("batsman", nonStriker);
+      handleChange("nonStriker", striker);
     }
     
   };
@@ -1263,7 +1265,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             <input
               type="text"
               value={nonStriker}
-              onChange={(e) => setNonStriker(e.target.value)}
+              onChange={(e) => handleChange("nonStriker",e.target.value)}
               className="w-full border rounded p-2 mt-1"
               required
             />
@@ -1299,6 +1301,8 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
                 <th className="border p-2">Ball</th>
                 <th className="border p-2">Shot Type</th>
                 <th className="border p-2">Batsman</th>
+                <th className="border p-2">Batsman-nonstrike</th>
+                
                 <th className="border p-2">Bowler</th>
                 <th className="border p-2">Line</th>
                 <th className="border p-2">Length</th>
@@ -1324,6 +1328,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
                   <td className="border p-2">{ball.ballNumber}</td>
                   <td className="border p-2">{ball.shotType}</td>
                   <td className="border p-2">{ball.batsman}</td>
+                  <td className="border p-2">{ball.nonStriker}</td>
                   <td className="border p-2">{ball.bowler}</td>
                   <td className="border p-2">{ball.line}</td>
                   <td className="border p-2">{ball.Length}</td>
