@@ -1201,7 +1201,41 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             />
           </div>
           
-            <div>
+            
+          <div className="input-span-2">
+            <label className="block text-sm font-medium">Ball Type <br /></label>
+            <div className="button-group">
+              {ballTypes.map((ba) => (
+                <button
+                  key={ba}
+                  className={`toggle-button ${currentBall.ballType === ba ? 'active' : ''}`}
+                  onClick={() => handleChange("ballType", ba)}
+                  type="button"
+                >
+                  {ba}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+
+        <div className="input-span-2">
+            <label className="block text-sm font-medium">Shot Type<br /></label>
+            <div className="button-group">
+              {shots.map((shot) => (
+                <button
+                  key={shot}
+                  className={`toggle-button ${currentBall.shotType === shot ? 'active' : ''}`}
+                  onClick={() => handleChange("shotType", shot)}
+                  type="button"
+                >
+                  {shot}
+                </button>
+              ))}
+            </div>
+          </div>
+        
+          <div>
             <label className="block text-sm font-medium">Dead Ball<br /></label>
             <div className="button-group">
               {deadBallOptions.map((db) => (
@@ -1221,46 +1255,12 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             Length: <strong>{currentBall.Length || 'None'}</strong>
           </p> 
 
-          <div className="input-span-2">
-            <label className="block text-sm font-medium">Ball Type <br /></label>
-            <div className="button-group">
-              {ballTypes.map((ba) => (
-                <button
-                  key={ba}
-                  className={`toggle-button ${currentBall.ballType === ba ? 'active' : ''}`}
-                  onClick={() => handleChange("ballType", ba)}
-                  type="button"
-                >
-                  {ba}
-                </button>
-              ))}
-            </div>
+          <div className="text-center mt-2">
+            <p className="text-sm font-medium">
+            Wagon Wheel: <strong>{currentBall.wagonWheel || 'None'}</strong>
+            </p>
           </div>
-
-          
-          
-
-
-          
-         
-
-        <div className="input-span-2">
-            <label className="block text-sm font-medium">Shot Type<br /></label>
-            <div className="button-group">
-              {shots.map((shot) => (
-                <button
-                  key={shot}
-                  className={`toggle-button ${currentBall.shotType === shot ? 'active' : ''}`}
-                  onClick={() => handleChange("shotType", shot)}
-                  type="button"
-                >
-                  {shot}
-                </button>
-              ))}
-            </div>
-          </div>
-        
-            
+  
           
 
           <div>
@@ -1347,11 +1347,7 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
               required
             />
           </div>
-          <div className="text-center mt-2">
-            <p className="text-sm font-medium">
-            Wagon Wheel: <strong>{currentBall.wagonWheel || 'None'}</strong>
-            </p>
-          </div>  
+            
         </div>
       
 
