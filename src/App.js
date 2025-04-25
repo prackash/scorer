@@ -1,6 +1,7 @@
 
 import React, {useEffect, useState} from "react"
 import wagonwheel from "./assets/wagonwheel.jpg"
+import rhb from "./assets/rhb.jpeg"
 import "./styles/CricketScorer.css"
 import * as XLSX from "xlsx";
 import imageMapResize from "image-map-resizer";
@@ -151,6 +152,15 @@ export default function CricketScorer(){
       handleChange("wagonWheel", selectedZone);
     }
   };
+
+  const handlePitchMapClick = (zone) => {
+    zone.preventDefault();
+    const value = zone.target.getAttribute("data-value")?.trim();
+    if(!value) return;
+    const [line, length] = value.split("-");
+    handleChange("line", line);
+    handleChange("Length", length);
+  }
     
   const switchStrikers=()=>{
     if(currentBall.switchStrikers===1){
@@ -818,7 +828,30 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
           Download Bowling Stats
         </button>
       </div>
+      {/* <div className="batting-order-table mt-6">
+  <h2 className="heading">Batting Order</h2>
+  <div className="scrollable-table-container">
+    <table className="fielder-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Batsman</th>
+        </tr>
+      </thead>
+      <tbody>
+        {battingOrder.map((player, index) => (
+          <tr key={player.name || index}>
+            <td>{index + 1}</td>
+            <td>{player.name}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div> */}
+
       </div>
+
       <div className="scorer-container">
 
 
@@ -979,39 +1012,8 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         <h1 className="heading">Cricket Scorer</h1>
         <div className="form-grid">
         <div className="input-grid">
-        <div>
-            <label className="block text-sm font-medium">Bowler End<br /></label>
-            <div className="button-group">
-              {bowlerEndOptions.map((be) => (
-                <button
-                  key={be}
-                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
-                  onClick={() => handleChange("end", be)}
-                  type="button"
-                >
-                  {be}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Around the Wicket<br /></label>
-            <div className="button-group">
-              {aroundTheWicketOptions.map((atw) => (
-                <button
-                  key={atw}
-                  className={`toggle-button ${currentBall.aroundTheWicket === atw ? 'active' : ''}`}
-                  onClick={() => handleChange("aroundTheWicket", atw)}
-                  type="button"
-                >
-                  {atw}
-                </button>
-              ))}
-            </div>
-          </div>
           
-          
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
             <label className="block text-sm font-medium">Line<br /></label>
             <div className="button-group">
               {lineOptions.map((line) => (
@@ -1040,54 +1042,46 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
-          <div className="col-span-2">
-            <label className="block text-sm font-medium">Ball Type <br /></label>
-            <div className="button-group">
-              {ballTypes.map((ba) => (
-                <button
-                  key={ba}
-                  className={`toggle-button ${currentBall.ballType === ba ? 'active' : ''}`}
-                  onClick={() => handleChange("ballType", ba)}
-                  type="button"
-                >
-                  {ba}
-                </button>
-              ))}
-            </div>
-          </div>
-
+          <div id = "pitchtablerhb">
+                <img src={rhb} usemap="#image-map-rhb" id="lal-rhb"></img>
+                <map name="image-map-rhb">
+                <area target="" alt="Wide-FullToss" title="Wide-FullToss" href = "#" id="lal-Wide-FullToss" data-value="Wide-FullToss" coords="130,2,181,56" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="OutsideOff-FullToss" title="OutsideOff-FullToss" href = "#" id="lal-OutsideOff-FullToss" data-value="OutsideOff-FullToss" coords="183,1,205,55" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Off-FullToss" title="Off-FullToss" href = "#" id="lal-Off-FullToss" data-value="Off-FullToss" coords="207,0,253,55" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Line-FullToss" title="Line-FullToss" href = "#" id="lal-Line-FullToss" data-value="Line-FullToss" coords="254,0,298,54" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Leg-Fulltoss" title="Leg-Fulltoss" href = "#" id="lal-Leg-Fulltoss" data-value="Leg-Fulltoss" coords="300,0,436,56" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Wide-Yorker" title="Wide-Yorker" href = "#" id="lal-Wide-Yorker" data-value="Wide-Yorker" coords="128,57,182,125" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="OutsideOff-Yorker" title="OutsideOff-Yorker" href = "#" id="lal-OutsideOff-Yorker" data-value="OutsideOff-Yorker" coords="184,56,205,125" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Off-Yorker" title="Off-Yorker" href = "#" id="lal-Off-Yorker" data-value="Off-Yorker" coords="207,57,253,125" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Line-Yorker" title="Line-Yorker" href = "#" id="lal-Line-Yorker" data-value="Line-Yorker" coords="254,56,298,125" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Leg-Yorker" title="Leg-Yorker" href = "#" id="lal-Leg-Yorker" data-value="Leg-Yorker" coords="301,57,435,127" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Wide-FullLength" title="Wide-FullLength" href = "#" id="lal-Wide-FullLength" data-value="Wide-FullLength" coords="128,128,182,203" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="OutsideOff-FullLength" title="OutsideOff-FullLength" href = "#" id="lal-OutsideOff-FullLength" data-value="OutsideOff-FullLength" coords="183,127,206,203" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Off-FullLength" title="Off-FullLength" href = "#" id="lal-Off-FullLength" data-value="Off-FullLength" coords="208,128,252,203" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Line-FullLength" title="Line-FullLength" href = "#" id="lal-Line-FullLength" data-value="Line-FullLength" coords="254,126,299,202" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Leg-FullLength" title="Leg-FullLength" href = "#" id="lal-Leg-FullLength" data-value="Leg-FullLength" coords="301,128,434,202" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Wide-GoodLength" title="Wide-GoodLength" href = "#" id="lal-Wide-GoodLength" data-value="Wide-GoodLength" coords="130,205,181,300" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="OutsideOff-GoodLength" title="OutsideOff-GoodLength" href = "#" id="lal-OutsideOff-GoodLength" data-value="OutsideOff-GoodLength" coords="183,203,205,302" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Off-GoodLength" title="Off-GoodLength" href = "#" id="lal-Off-GoodLength" data-value="Off-GoodLength" coords="206,204,253,300" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Line-GoodLength" title="Line-GoodLength" href = "#" id="lal-Line-GoodLength" data-value="Line-GoodLength" coords="254,203,299,301" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Leg-GoodLength" title="Leg-GoodLength" href = "#" id="lal-Leg-GoodLength" data-value="Leg-GoodLength" coords="300,205,434,299" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Wide-BackOfLength" title="Wide-BackOfLength" href = "#" id="lal-Wide-BackOfLength" data-value="Wide-BackOfLength" coords="128,303,181,382" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="OutsideOff-BackOfLength" title="OutsideOff-BackOfLength" href = "#" id="lal-OutsideOff-BackOfLength" data-value="OutsideOff-BackOfLength" coords="182,303,206,383" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Off-BackOfLength" title="Off-BackOfLength" href = "#" id="lal-Off-BackOfLength" data-value="Off-BackOfLength" coords="206,302,253,382" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Line-BackOfLength" title="Line-BackOfLength" href = "#" id="lal-Line-BackOfLength" data-value="Line-BackOfLength" coords="254,302,299,383" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Leg-BackOfLength" title="Leg-BackOfLength" href = "#" id="lal-Leg-BackOfLength" data-value="Leg-BackOfLength" coords="300,302,435,384" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Wide-Bouncer" title="Wide-Bouncer" href = "#" id="lal-Wide-Bouncer" data-value="Wide-Bouncer" coords="128,385,181,463" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="OutsideOff-Bouncer" title="OutsideOff-Bouncer" href = "#" id="lal-OutsideOff-Bouncer" data-value="OutsideOff-Bouncer" coords="182,384,205,463" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Off-Bouncer" title="Off-Bouncer" href = "#" id="lal-Off-Bouncer" data-value="Off-Bouncer" coords="206,383,253,463" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Line-Bouncer" title="Line-Bouncer" href = "#" id="lal-Line-Bouncer" data-value="Line-Bouncer" coords="255,384,299,463" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                <area target="" alt="Leg-Bouncer" title="Leg-Bouncer" href = "#" id="lal-Leg-Bouncer" data-value="Leg-Bouncer" coords="300,384,435,464" shape="rect" onClick={(zone)=>handlePitchMapClick(zone)}></area>
+                </map>
+            </div> 
           
-          
-          <div>
-            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
-            <input
-              type="text"
-              value={currentBall.ballSpeed}
-              onChange={(e) => handleChange("ballSpeed", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
-          
-            <div>
-            <label className="block text-sm font-medium">Dead Ball<br /></label>
-            <div className="button-group">
-              {deadBallOptions.map((db) => (
-                <button
-                  key={db}
-                  className={`toggle-button ${currentBall.deadBall === db ? 'active' : ''}`}
-                  onClick={() => handleChange("deadBall", db)}
-                  type="button"
-                >
-                  {db}
-                </button>
-              ))}
-            </div>
-          </div>
-
-
         </div>
+        
         <div className="image-wrapper">
           <img
             src={wagonwheel}
@@ -1166,6 +1160,89 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         </div>
             
         <div className="input-grid-below">
+        
+        <div>
+            <label className="block text-sm font-medium">Bowler End<br /></label>
+            <div className="button-group">
+              {bowlerEndOptions.map((be) => (
+                <button
+                  key={be}
+                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
+                  onClick={() => handleChange("end", be)}
+                  type="button"
+                >
+                  {be}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Around the Wicket<br /></label>
+            <div className="button-group">
+              {aroundTheWicketOptions.map((atw) => (
+                <button
+                  key={atw}
+                  className={`toggle-button ${currentBall.aroundTheWicket === atw ? 'active' : ''}`}
+                  onClick={() => handleChange("aroundTheWicket", atw)}
+                  type="button"
+                >
+                  {atw}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
+            <input
+              type="text"
+              value={currentBall.ballSpeed}
+              onChange={(e) => handleChange("ballSpeed", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+          
+            <div>
+            <label className="block text-sm font-medium">Dead Ball<br /></label>
+            <div className="button-group">
+              {deadBallOptions.map((db) => (
+                <button
+                  key={db}
+                  className={`toggle-button ${currentBall.deadBall === db ? 'active' : ''}`}
+                  onClick={() => handleChange("deadBall", db)}
+                  type="button"
+                >
+                  {db}
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className="col-span-2 text-sm text-center mt-2">
+            Selected Line: <strong>{currentBall.line || 'None'}</strong>,
+            Length: <strong>{currentBall.Length || 'None'}</strong>
+          </p> 
+
+          <div className="input-span-2">
+            <label className="block text-sm font-medium">Ball Type <br /></label>
+            <div className="button-group">
+              {ballTypes.map((ba) => (
+                <button
+                  key={ba}
+                  className={`toggle-button ${currentBall.ballType === ba ? 'active' : ''}`}
+                  onClick={() => handleChange("ballType", ba)}
+                  type="button"
+                >
+                  {ba}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          
+          
+
+
+          
+         
 
         <div className="input-span-2">
             <label className="block text-sm font-medium">Shot Type<br /></label>
