@@ -219,6 +219,22 @@ export default function CricketScorer(){
     setNewFielderZone("");
 };
 
+const updateBatsmanName = (index, name) => {
+  setBattingOrder(prevOrder =>
+    prevOrder.map((player, i) =>
+      i === index ? { ...player, name } : player
+    )
+  );
+};
+
+const addBatsman = () => {
+  setBattingOrder(prevOrder => [
+    ...prevOrder,
+    { name: "", runs: 0, fours: 0, sixes: 0, balls: 0 }
+  ]);
+};
+
+
   const endOfOver = () => {
     console.log("End of Over");
     setBallCount(0);
@@ -849,6 +865,58 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
     </table>
   </div>
 </div> */}
+<div className="batting-order-management mt-6">
+  <h2 className="heading">Batting Order</h2>
+
+  <div className="scrollable-table-container">
+    <table className="fielder-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Batsman</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {battingOrder.map((player, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>
+              <input
+                type="text"
+                value={player.name}
+                onChange={(e) => updateBatsmanName(index, e.target.value)}
+                className="w-full p-1 border rounded"
+              />
+            </td>
+            <td className="flex gap-2">
+              <button
+                onClick={() => handleChange("batsman", player.name)}
+                className="set-button"
+              >
+                Set Striker
+              </button>
+              <button
+                onClick={() => handleChange("nonStriker", player.name)}
+                className="set-button"
+              >
+                Set Non-Striker
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Add Player Button */}
+  <div className="mt-4 flex justify-center">
+    <button onClick={addBatsman} className="add-button">
+      Add Player
+    </button>
+  </div>
+</div>
+
 
       </div>
 
