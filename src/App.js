@@ -24,6 +24,7 @@ export default function CricketScorer(){
     aroundTheWicket: "No",
     deadBall:"No",
     end:"",
+    keyEvents: [],
   });
   const runOptions = [0,1,2,3,4,5,6,7,8];
   const [currentTossWonBy, setCurrentTossWonBy] = useState('');
@@ -152,6 +153,19 @@ export default function CricketScorer(){
       handleChange("wagonWheel", selectedZone);
     }
   };
+
+  const toggleKeyEvent = (value) => {
+    setCurrentBall(prev => {
+      const current = prev.keyEvents || [];
+  
+      const updated = current.includes(value)
+        ? current.filter(ev => ev !== value) // deselect
+        : [...current, value]; // select
+  
+      return { ...prev, keyEvents: updated };
+    });
+  };
+  
 
   const handlePitchMapClick = (zone) => {
     zone.preventDefault();
@@ -342,13 +356,14 @@ const addBatsman = () => {
   const downloadFieldingNotesCSV = () => {
     if (fieldingNotes.length === 0) return;
   
-    const headers = ["Over", "Ball", "Exceptional", "Misfielding"];
-    const rows = fieldingNotes.map(note => [
-      `${note.over}`,
-      `${note.ball}`,
-      `"${note.exceptional || ""}"`,
-      `"${note.misfielding || ""}"`
-    ]);
+    const headers = ["Over", "Ball", "Exceptional Fielding",
+    "Misfielding",
+    "Good Contact",
+    "Overthrow",
+    "Unorthodox Shot",
+    "Concussion"];
+    const rows = fieldingNotes.map(note => headers.map(header => note[header] ?? ""));
+
   
     const csvContent = [
       headers.join(","),
@@ -764,18 +779,31 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
       }  
     ]
     );
-    if (exceptionalFielding || misfielding) {
+    const trackedEvents = [
+      "Exceptional Fielding",
+      "Misfielding",
+      "Good Contact",
+      "Overthrow",
+      "Unorthodox Shot",
+      "Concussion"
+    ];
+    
+    const loggedEvents = trackedEvents.reduce((acc, eventName) => {
+      acc[eventName] = currentBall.keyEvents.includes(eventName) ? "Yes" : "";
+      return acc;
+    }, {});
+    
+    const hasAnyTrackedEvent = Object.values(loggedEvents).some(val => val === "Yes");
+    
+    if (hasAnyTrackedEvent) {
       setFieldingNotes(prev => [
         ...prev,
         {
           over: over,
           ball: ballCount + 1,
-          exceptional: exceptionalFielding,
-          misfielding: misfielding
+          ...loggedEvents
         }
       ]);
-      setExceptionalFielding("");
-      setMisfielding("");
     }
     
   };
@@ -1372,14 +1400,34 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
                   type="button"
                 >
                   {dis}
-                </button>
+                </button> 
               ))}
             </div>
           </div>
           <div>
-          <label className="block text-sm font-medium">Key Events<br /></label>
-            
+            <label className="block text-sm font-medium mb-2">Key Events</label>
+            <div className="button-group flex flex-wrap gap-2">
+              {[
+                "Exceptional Fielding",
+                "Misfielding",
+                "Good Contact",
+                "Overthrow",
+                "Unorthodox Shot",
+                "Concussion"
+              ].map((event) => (
+                <button
+                  key={event}
+                  className={`toggle-button ${currentBall.keyEvents.includes(event) ? "active" : ""}`}
+                  onClick={() => toggleKeyEvent(event)}
+                  type="button"
+                >
+                  {event}
+                </button>
+              ))}
+            </div>
           </div>
+
+
         </div>
 
         <div className="input-grid">
@@ -1547,37 +1595,6 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
         </button>
 
       </div>
-      <div className="fielder-misc-section right-align">
-  <h2 className="heading">Exceptional and Misfielding</h2>
-
-  <div className="input-group">
-    <label className="block text-sm font-medium">Exceptional Fielding: </label>
-    <select
-      value={exceptionalFielding}
-      onChange={(e) => setExceptionalFielding(e.target.value)}
-      className="w-full border rounded p-2 mt-1"
-    >
-      <option value="">Select Player</option>
-      {fielderAlignment.map(f => (
-        <option key={f.name} value={f.name}>{f.name}</option>
-      ))}
-    </select>
-  </div>
-
-  <div className="input-group mt-4">
-    <label className="block text-sm font-medium">Misfielding: </label>
-    <select
-      value={misfielding}
-      onChange={(e) => setMisfielding(e.target.value)}
-      className="w-full border rounded p-2 mt-1"
-    >
-      <option value="">Select Player</option>
-      {fielderAlignment.map(f => (
-        <option key={f.name} value={f.name}>{f.name}</option>
-      ))}
-    </select>
-  </div>
-</div>
 
 {fieldingNotes.length > 0 && (
   <div className="mt-4">
