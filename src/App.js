@@ -49,7 +49,7 @@ export default function CricketScorer(){
 
   const tossDecisionOptions = ['Bat', 'Bowl'];
 
-  const extraOptions = ["None","Wide","No Ball","Free Hit"];
+  const extraOptions = ["None","Wide","No Ball","Free Hit","Penalty"];
   const noBat=["Valid Contact","Bye","Leg Bye"];
   const dismissalOptions = ["None","Bowled","Caught","LBW","Run Out","Stumped","Hit Wicket","Obstructing the Field","Handled the Ball","Timed Out","Hit Ball Twice","Retired Hurt","Other"];
   const bowlerEndOptions = ["Pavillion","Far End"];
@@ -566,7 +566,12 @@ setBowlingStats(prevStats => {
   const extras = latestBall.extraType ? 1 : 0;
   const runs = latestBall.runsThisBall;
   const isWicket = latestBall.dismissalType !== "";
-
+  const isPenalty = latestBall.extraType === "Penalty";
+  console.log("isPenalty",isPenalty);
+  if (isPenalty) {
+    extras = extras+ 4;
+  }
+  
   const current = prevStats[bowler];
 
   return {
@@ -635,6 +640,9 @@ setBattingOrder(prevOrder => {
     if(currentBall.extraType==="Wide" || currentBall.extraType==="No Ball"){
       extraRuns=1;
     }
+    if(currentBall.extraType==="Penalty"){
+      extraRuns+=5;
+    }
     
     if(currentBall.runs%2===1){
       currentBall.switchStrikers+=1;
@@ -657,9 +665,13 @@ setBattingOrder(prevOrder => {
       if(!bowler) return prevStats;
       const isWideOrNoBall = currentBall.extraType.includes("Wide") || currentBall.extraType.includes("No Ball")|| currentBall.extraType.includes("Free Hit");
       const isValidBall = !isWideOrNoBall;
-      const extras = currentBall.extraType ? 1 : 0;
-      const runs = currentBall.runs + extras;
+
+      console.log(currentBall.extraType)
+      const runs = currentBall.runs + extraRuns;
       const isWicket = currentBall.dismissalType !== "";
+      const isPenalty = currentBall.extraType === "Penalty";
+
+  
 
       const exisiting = prevStats[bowler]|| {balls:0,runs:0,wickets:0,extras:0};
       return {
@@ -668,7 +680,7 @@ setBattingOrder(prevOrder => {
           balls: exisiting.balls + (isValidBall ? 1 : 0),
           runs: exisiting.runs + runs,
           wickets: exisiting.wickets + (isWicket ? 1 : 0),
-          extras: exisiting.extras + extras,
+          extras: exisiting.extras + extraRuns,
         },
       };
     });
@@ -1078,8 +1090,52 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
 
       <div className="scorer-card">
         <h1 className="heading">Cricket Scorer</h1>
+        <div className="input-grid-below">
+        <div>
+            <label className="block text-sm font-medium">Bowler End<br /></label>
+            <div className="button-group">
+              {bowlerEndOptions.map((be) => (
+                <button
+                  key={be}
+                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
+                  onClick={() => handleChange("end", be)}
+                  type="button"
+                >
+                  {be}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Around the Wicket<br /></label>
+            <div className="button-group">
+              {aroundTheWicketOptions.map((atw) => (
+                <button
+                  key={atw}
+                  className={`toggle-button ${currentBall.aroundTheWicket === atw ? 'active' : ''}`}
+                  onClick={() => handleChange("aroundTheWicket", atw)}
+                  type="button"
+                >
+                  {atw}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
+            <input
+              type="text"
+              value={currentBall.ballSpeed}
+              onChange={(e) => handleChange("ballSpeed", e.target.value)}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </div>
+        <br/>
+        </div>
         <div className="form-grid">
+  
         <div className="input-grid">
+          
           
         {/* <div className="col-span-2">
             <label className="block text-sm font-medium">Line<br /></label>
@@ -1229,45 +1285,6 @@ if ((isLegit || isFreeHit) && !isByeOrLegBye) {
             
         <div className="input-grid-below">
         
-        <div>
-            <label className="block text-sm font-medium">Bowler End<br /></label>
-            <div className="button-group">
-              {bowlerEndOptions.map((be) => (
-                <button
-                  key={be}
-                  className={`toggle-button ${currentBall.end === be ? 'active' : ''}`}
-                  onClick={() => handleChange("end", be)}
-                  type="button"
-                >
-                  {be}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Around the Wicket<br /></label>
-            <div className="button-group">
-              {aroundTheWicketOptions.map((atw) => (
-                <button
-                  key={atw}
-                  className={`toggle-button ${currentBall.aroundTheWicket === atw ? 'active' : ''}`}
-                  onClick={() => handleChange("aroundTheWicket", atw)}
-                  type="button"
-                >
-                  {atw}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Ball Speed (km/h)<br/></label>
-            <input
-              type="text"
-              value={currentBall.ballSpeed}
-              onChange={(e) => handleChange("ballSpeed", e.target.value)}
-              className="w-full border rounded p-2 mt-1"
-            />
-          </div>
           
             
           <div className="input-span-2">
